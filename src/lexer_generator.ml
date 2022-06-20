@@ -189,7 +189,12 @@ let epsilon_closure (n: nfa) (s: nfa_state) : nfa_state set =
    des états du NFA [n] dans l'ensemble [ls]. *)
 let epsilon_closure_set (n: nfa) (ls: nfa_state set) : nfa_state set =
    (* TODO *)
-   ls
+
+   let ref ensemble = ls in
+   let ajout (s: nfa_state) (ensemble : nfa_state set): nfa_state set =
+      Set.union ensemble (epsilon_closure s)
+    in (Set.fold ajout ls ls) 
+     
 
 (* [dfa_initial_state n] calcule l'état initial de l'automate déterminisé. *)
 let dfa_initial_state (n: nfa) : dfa_state =
