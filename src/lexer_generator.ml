@@ -210,6 +210,7 @@ let dfa_initial_state (n: nfa) : dfa_state =
    [q]. Cet ensemble est de type [(char set option * nfa_state) list].
 
    On transforme cet ensemble [t] de la manière suivante :
+
    - on jette les epsilon-transitions : [assoc_throw_none]
    - on transforme chaque transition ({c1,c2,..,cn}, q) en une liste de
      transitions [(c1,q); (c2,q); ...; (cn,q)] : [assoc_distribute_key]
@@ -255,7 +256,11 @@ let rec build_dfa_table (table: (dfa_state, (char * dfa_state) list) Hashtbl.t)
      * à partir des transitions du NFA comme décrit auparavant *)
     let transitions : (char * dfa_state) list =
          (* TODO *)
-         []
+         let transi_totales = Set.fold (fun x liste -> (n.nfa_step x)@liste) ds [] in
+         let transi_sans_eps = assoc_throw_none transi_totales in
+         let transi_distrib_key = assoc_distribute_key transi_sans_eps in
+         let transit_merge = assoc_merge_vals transi_distrib_key in
+         List.map (fun (a,b)-> (a, (epsilon_closure_set b))) transit_merge
       in
     Hashtbl.replace table ds transitions;
     List.iter (build_dfa_table table n) (List.map snd transitions)
