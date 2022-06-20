@@ -198,8 +198,7 @@ let epsilon_closure_set (n: nfa) (ls: nfa_state set) : nfa_state set =
 
 (* [dfa_initial_state n] calcule l'état initial de l'automate déterminisé. *)
 let dfa_initial_state (n: nfa) : dfa_state =
-   (* TODO *)
-   Set.empty
+   epsilon_closure_set (Set.of_list n.nfa_initial)
 
 (* Construction de la table de transitions de l'automate DFA. *)
 
