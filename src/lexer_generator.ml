@@ -58,7 +58,7 @@ let cat_nfa n1 n2 =
   | t::q -> parcours etat q (None, t)::accumulateur
   in let step q = if List.mem q n2.nfa_states then n2.nfa_step q
                   else if List.mem q n1.nfa_states then 
-                    if List.meme q n1.nfa_final then (parcours q n2.nfa_initial [])@(n1.nfa_step q)
+                    if List.mem_assoc q n1.nfa_final then (parcours q n2.nfa_initial [])@(n1.nfa_step q)
                     else n1.nfa_step q
                   else failwith "Impossible"
   in nfa_cat.nfa_step = step in
@@ -81,7 +81,28 @@ let alt_nfa n1 n2 =
 (* t est de type [string -> token option] *)
 let star_nfa n t =
    (* TODO *)
-   empty_nfa
+  let parcours etat liste accumulateur = 
+  match liste with
+  | [] -> accumulateur
+  | t::q -> parcours etat q (None, t)::accumulateur
+  in let step q = if List.mem q n2.nfa_states then n2.nfa_step q
+                  else if List.mem q n1.nfa_states then 
+                    if List.mem_assoc q n1.nfa_final then (parcours q n2.nfa_initial (n1.nfa_step q))
+                    else n1.nfa_step q
+                  else failwith "Impossible"
+  in 
+
+   let nfa_star = empty_nfa in
+   let nfa_star.nfa_initial = n.nfa_initial in 
+   let nfa_final_state = (max nfa_states)+1 in
+   let nfa_star.nfa_final = (nfa_final_state, t) in
+   let nfa_star.nfa_step = fun q -> if List.mem_assoc q n.nfa_final then 
+                                        let eps_transi = parcours q n.nfa_initial (n.nfa_step q) in
+                                        (None, nfa_final_state)::eps_transi
+                                    else n.nfa_step q
+  in nfa_star
+
+                                      
 
 
 (* [nfa_of_regexp r freshstate t] construit un NFA qui reconnaît le même langage
