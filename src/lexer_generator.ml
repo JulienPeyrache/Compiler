@@ -296,7 +296,10 @@ let priority t =
    [None] si la liste [l] est vide. *)
 let min_priority (l: token list) : token option =
    (* TODO *)
-   None
+   match l with 
+   |[] -> None
+   |tete::queue -> let min_prio token1 token2 = if ((priority token1)> (priority token2)) then token2 else token1 in
+                  Some (List.fold min_prio tete queue)
 
 (* [dfa_final_states n dfa_states] renvoie la liste des états finaux du DFA,
    accompagnés du token qu'ils reconnaissent. *)
