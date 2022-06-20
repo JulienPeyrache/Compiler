@@ -176,6 +176,11 @@ let epsilon_closure (n: nfa) (s: nfa_state) : nfa_state set =
      partant de l'état [s], et en suivant uniquement les epsilon-transitions. *)
   let rec traversal (visited: nfa_state set) (s: nfa_state) : nfa_state set =
          (* TODO *)
+         let rec parcours_epsilon liste = 
+          match liste with 
+          |[] -> ()
+          |(None, q)::queue-> (if Set.mem q visited then () else Set.add q visited; traversal visited q); parcours_epsilon queue
+          |tete::queue -> parcours_epsilon queue
          visited
   in
   traversal Set.empty s
