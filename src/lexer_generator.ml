@@ -323,7 +323,7 @@ let make_dfa_step (table: (dfa_state, (char * dfa_state) list) Hashtbl.t) =
   | Some liste -> List.assoc_opt a liste
   | None -> None
 
-  
+
 (* Finalement, on assemble tous ces morceaux pour construire l'automate. La
    fonction [dfa_of_nfa n] vous est grâcieusement offerte. *)
 let dfa_of_nfa (n: nfa) : dfa =
@@ -390,7 +390,15 @@ let tokenize_one (d : dfa) (w: char list) : lexer_result * char list =
       (current_token: char list) (last_accepted: lexer_result * char list)
     : lexer_result * char list =
          (* TODO *)
-         last_accepted
+         match w with 
+         |[] -> last_accepted
+         |tete::queue -> match d.dfa_step q tete with
+            |None -> last_accepted
+            |Some(qnext)-> let funct_opt = List.assoc_opt qnext d.dfa_final and new_tok = tete::current_token in
+                            match funct_opt with 
+                            |None-> recognize qnext queue new_tok last_accepted
+                            |Some(t) -> let tok = t (string_of_char_list (List.rev new_tok)) in
+                                        recognize qnext queue new_tok (LRToken(tok), queue)  
   in
   recognize d.dfa_initial w [] (LRerror, w)
 
