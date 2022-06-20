@@ -47,33 +47,37 @@ let empty_nfa =
 (* Concaténation de NFAs.  *)
 let cat_nfa n1 n2 =
    (* TODO *)
-   let nfa_cat = empty in
-  let nfa_cat.nfa_states = n1.nfa_states@n2.nfa_states in
-  let nfa_cat.nfa_initial = n1.nfa_initial in
-  let nfa_cat.nfa_final = n2.nfa_final in
-
-  let parcours etat liste accumulateur = 
+  let rec parcours (etat : nfa_state) (liste : nfa_state list) (accumulateur : (char set option * nfa_state) list) : (char set option * nfa_state) list= 
   match liste with
   | [] -> accumulateur
-  | t::q -> parcours etat q (None, t)::accumulateur
+  | t::q -> parcours etat q ((None, t)::accumulateur)
   in let step q = if List.mem q n2.nfa_states then n2.nfa_step q
                   else if List.mem q n1.nfa_states then 
                     if List.mem_assoc q n1.nfa_final then (parcours q n2.nfa_initial [])@(n1.nfa_step q)
                     else n1.nfa_step q
                   else failwith "Impossible"
-  in nfa_cat.nfa_step = step in
-  nfa_cat
+  in 
+  {
+    nfa_states = n1.nfa_states@n2.nfa_states;
+    nfa_initial = n1.nfa_initial;
+    nfa_final = n2.nfa_final;
+    nfa_step = step;
+  }
  
 (* Alternatives de NFAs *)
 let alt_nfa n1 n2 =
    (* TODO *)
-   let nfa_alt = empty_nfa in
-   let nfa_cat.nfa_states = n1.nfa_states@n2.nfa_states in
-   let nfa_cat.nfa_initial = n1.nfa_initial@n2.nfa_initial in
-   let nfa_cat.nfa_final = n1.nfa_final@n2.nfa_final in
-   let nfa_alt.nfa_step = fun q -> if List.mem q n1.nfa_states then n1.nfa_step q
+   let step = fun q -> if List.mem q n1.nfa_states then n1.nfa_step q
                                   else if  List.mem q n2.nfa_states then n2.nfa_step q
                                   else failwith "Impossible"
+    in 
+  {
+    nfa_states = n1.nfa_states@n2.nfa_states;
+    nfa_initial = n1.nfa_initial@n2.nfa_initial;
+    nfa_final = n1.nfa_final@n2.nfa_final;
+    nfa_step = step;
+  }
+ 
 
   
 
@@ -81,26 +85,23 @@ let alt_nfa n1 n2 =
 (* t est de type [string -> token option] *)
 let star_nfa n t =
    (* TODO *)
-  let parcours etat liste accumulateur = 
+  let rec parcours etat liste accumulateur = 
   match liste with
   | [] -> accumulateur
-  | t::q -> parcours etat q (None, t)::accumulateur
-  in let step q = if List.mem q n2.nfa_states then n2.nfa_step q
-                  else if List.mem q n1.nfa_states then 
-                    if List.mem_assoc q n1.nfa_final then (parcours q n2.nfa_initial (n1.nfa_step q))
-                    else n1.nfa_step q
-                  else failwith "Impossible"
-  in 
+  | t::q -> parcours etat q ((None, t)::accumulateur)
 
-   let nfa_star = empty_nfa in
-   let nfa_star.nfa_initial = n.nfa_initial in 
-   let nfa_final_state = (max nfa_states)+1 in
-   let nfa_star.nfa_final = (nfa_final_state, t) in
-   let nfa_star.nfa_step = fun q -> if List.mem_assoc q n.nfa_final then 
+  in 
+  let nfa_final_state = (max n.nfa_states)+1 in
+  let step = fun q -> if List.mem_assoc q n.nfa_final then 
                                         let eps_transi = parcours q n.nfa_initial (n.nfa_step q) in
                                         (None, nfa_final_state)::eps_transi
                                     else n.nfa_step q
-  in nfa_star
+  in {
+    nfa_states = (nfa_final_state)::n.nfa_states;
+    nfa_initial = n.nfa_initial;
+    nfa_final = (nfa_final_state, t)::[];
+    nfa_step = step
+  }
 
                                       
 
@@ -125,13 +126,13 @@ let rec nfa_of_regexp r freshstate t =
    (* TODO *)
    | Cat(regexp1, regexp2)-> let (nfa1, frsh1) = nfa_of_regexp regexp1 freshstate t in
                             let (nfa2, frsh2) = nfa_of_regexp regexp2 frsh1 t in
-                            cat_nfa(nfa1, nfa2), frsh2
+                            cat_nfa(nfa1, nfa2),frsh2
 
     | Alt(regexp1, regexp2)-> let (nfa1, frsh1) = nfa_of_regexp regexp1 freshstate t in
                             let (nfa2, frsh2) = nfa_of_regexp regexp2 frsh1 t in
                             alt_nfa(nfa1, nfa2), frsh2
     |Star(regexp) -> let (nfa, frsh) = nfa_of_regexp regexp freshtate t in
-                      (star_nfa nfa t, frsh)
+                      star_nfa nfa t, frsh
 
 
 
@@ -181,12 +182,14 @@ let epsilon_closure (n: nfa) (s: nfa_state) : nfa_state set =
           |[] -> ()
           |(None, q)::queue-> (if Set.mem q visited then () else Set.add q visited; traversal visited q); parcours_epsilon queue
           |tete::queue -> parcours_epsilon queue
+         in parcours_epsilon (n.nfa_step s);
          visited
   in
   traversal Set.empty s
 
 (* [epsilon_closure_set n ls] calcule l'union des epsilon-fermeture de chacun
    des états du NFA [n] dans l'ensemble [ls]. *)
+
 let epsilon_closure_set (n: nfa) (ls: nfa_state set) : nfa_state set =
    (* TODO *)
 
@@ -307,6 +310,7 @@ let dfa_final_states (n: nfa) (dfa_states: dfa_state list) :
   (dfa_state * (string -> token option)) list  =
    (* TODO *)
    []
+   
 
 (* Construction de la relation de transition du DFA. *)
 
@@ -315,8 +319,11 @@ let dfa_final_states (n: nfa) (dfa_states: dfa_state list) :
 let make_dfa_step (table: (dfa_state, (char * dfa_state) list) Hashtbl.t) =
   fun (q: dfa_state) (a: char) ->
    (* TODO *)
-   None
+  match Hashtbl.find_option table q with
+  | Some liste -> List.assoc_opt a liste
+  | None -> None
 
+  
 (* Finalement, on assemble tous ces morceaux pour construire l'automate. La
    fonction [dfa_of_nfa n] vous est grâcieusement offerte. *)
 let dfa_of_nfa (n: nfa) : dfa =

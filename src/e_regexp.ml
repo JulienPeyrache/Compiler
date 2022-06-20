@@ -63,6 +63,12 @@ let digit_regexp = char_range (char_list_of_string digits)
 let identifier_material = char_range (char_list_of_string (uppercase_letters ^ lowercase_letters ^ digits ^ "_"))
 let keyword_regexp s = str_regexp (char_list_of_string s)
 
+let any_char_regexp = char_range(alphabet)
+
+
+let any_string_regexp = char_range (char_list_of_string (uppercase_letters ^ lowercase_letters ^ digits ^ other_characters))
+
+
 (* La liste des expressions régulières permettant d'identifier les tokens du langage E *)
 let list_regexp : (regexp * (string -> token option)) list =
   [
@@ -98,20 +104,20 @@ let list_regexp : (regexp * (string -> token option)) list =
     (keyword_regexp "<=",      fun s -> Some (SYM_LEQ));
     (keyword_regexp ">=",      fun s -> Some (SYM_GEQ));
     (identifier_material,        fun s -> Some (SYM_IDENTIFIER s));
-    (char_regexp "",       fun s -> Some (SYM_EOF));
+    (char_regexp 'a',       fun s -> Some (SYM_EOF));
     (char_regexp '!',       fun s -> Some (SYM_BOOL_NOT));
     (keyword_regexp "&&",       fun s -> Some (SYM_BOOL_AND));
     (keyword_regexp "||",       fun s -> Some (SYM_BOOL_OR));
-    (keyword_regexp "",       fun s -> Some (SYM_ARROW));
+    (keyword_regexp "->",        fun s -> Some (SYM_ARROW));
     (keyword_regexp "|",       fun s -> Some (SYM_BITWISE_OR));
     (keyword_regexp "&",       fun s -> Some (SYM_BITWISE_AND));
     (keyword_regexp "~",       fun s -> Some (SYM_BIT_NOT));
     (char_regexp '&',       fun s -> Some (SYM_AMPERSAND));
     (keyword_regexp "extern",       fun s -> Some (SYM_EXTERN));
-    (Cat(keyword_regexp "include ", any_string_regexp),       fun s -> Some (SYM_INCLUDE s));
+    (keyword_regexp "include ",       fun s -> Some (SYM_INCLUDE s));
     (keyword_regexp "alloc",       fun s -> Some (SYM_ALLOC));
     (any_string_regexp,       fun s -> Some (SYM_STRING s));
-    (any_char_regexp,       fun s -> Some (SYM_CHARACTER s));
+    (any_char_regexp,       fun s -> Some (SYM_CHARACTER s.[0]));
 
     (* end TODO *)
     (Cat(keyword_regexp "//",
