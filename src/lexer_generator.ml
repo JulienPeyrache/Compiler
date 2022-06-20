@@ -60,13 +60,21 @@ let cat_nfa n1 n2 =
                   else if List.mem q n1.nfa_states then 
                     if List.meme q n1.nfa_final then (parcours q n2.nfa_initial [])@(n1.nfa_step q)
                     else n1.nfa_step q
-                  else  []
+                  else failwith "Impossible"
   in nfa_cat.nfa_step = step in
   nfa_cat
  
 (* Alternatives de NFAs *)
 let alt_nfa n1 n2 =
    (* TODO *)
+   let nfa_alt = empty_nfa in
+   let nfa_cat.nfa_states = n1.nfa_states@n2.nfa_states in
+   let nfa_cat.nfa_initial = n1.nfa_initial@n2.nfa_initial in
+   let nfa_cat.nfa_final = n1.nfa_final@n2.nfa_final in
+   let nfa_alt.nfa_step = fun q -> if List.mem q n1.nfa_states then n1.nfa_step q
+                                  else if  List.mem q n2.nfa_states then n2.nfa_step q
+                                  else failwith "Impossible"
+
   
 
 (* Répétition de NFAs *)
