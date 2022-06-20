@@ -47,12 +47,27 @@ let empty_nfa =
 (* Concaténation de NFAs.  *)
 let cat_nfa n1 n2 =
    (* TODO *)
-   empty_nfa
+   let nfa_cat = empty in
+  let nfa_cat.nfa_states = n1.nfa_states@n2.nfa_states in
+  let nfa_cat.nfa_initial = n1.nfa_initial in
+  let nfa_cat.nfa_final = n2.nfa_final in
 
+  let parcours etat liste accumulateur = 
+  match liste with
+  | [] -> accumulateur
+  | t::q -> parcours etat q (None, t)::accumulateur
+  in let step q = if List.mem q n2.nfa_states then n2.nfa_step q
+                  else if List.mem q n1.nfa_states then 
+                    if List.meme q n1.nfa_final then (parcours q n2.nfa_initial [])@(n1.nfa_step q)
+                    else n1.nfa_step q
+                  else  []
+  in nfa_cat.nfa_step = step in
+  nfa_cat
+ 
 (* Alternatives de NFAs *)
 let alt_nfa n1 n2 =
    (* TODO *)
-   empty_nfa
+  
 
 (* Répétition de NFAs *)
 (* t est de type [string -> token option] *)
