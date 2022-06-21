@@ -309,8 +309,18 @@ let min_priority (l: token list) : token option =
 let dfa_final_states (n: nfa) (dfa_states: dfa_state list) :
   (dfa_state * (string -> token option)) list  =
    (* TODO *)
-   []
-   
+   let rec parcours_final_dfa list accumulateur = match list with
+   | [] -> accumulateur
+   | tete::queue -> let final_set = Set.filter (fun x -> List.mem_assoc x d.dfa_final) tete in
+                    if (Set.empty final_set) then parcours_final_dfa queue accumulateur
+                    else let list_string_to_token = List.map (fun (a,b)-> b) (Set.elements final_set)) in 
+                    let rec parcours_list liste funct_acc = match liste with
+                      |[]-> funct_acc
+                      |tet::queu -> if ((priority tet "string") > (priority funct_acc "string")) then parcours_list queu funct_acc
+                                    else parcours_list queu tet
+                    in let tete1::queue1 = list_string_to_token in
+                    parcours_final_dfa queue ((tete, parcours_list queue1 tete1))::accumulateur
+  in parcours_final_dfa dfa_states [] 
 
 (* Construction de la relation de transition du DFA. *)
 
