@@ -124,15 +124,15 @@ let rec nfa_of_regexp r freshstate t =
                 nfa_step = fun q -> if q = freshstate then [(Some c, freshstate + 1)] else []
               }, freshstate + 2
    (* TODO *)
-   | Cat(regexp1, regexp2)-> let (nfa1, frsh1) = nfa_of_regexp regexp1 freshstate t in
-                            let (nfa2, frsh2) = nfa_of_regexp regexp2 frsh1 t in
-                            cat_nfa(nfa1, nfa2),frsh2
+   | Cat(regexp1, regexp2)-> let (nfa1, frsh1) = (nfa_of_regexp regexp1 freshstate t) in
+                            let (nfa2, frsh2) = (nfa_of_regexp regexp2 frsh1 t) in
+                            (cat_nfa(nfa1, nfa2),frsh2)
 
-    | Alt(regexp1, regexp2)-> let (nfa1, frsh1) = nfa_of_regexp regexp1 freshstate t in
+    | Alt(regexp1, regexp2)-> let (nfa1, frsh1) = (nfa_of_regexp regexp1 freshstate t) in
                             let (nfa2, frsh2) = nfa_of_regexp regexp2 frsh1 t in
                             alt_nfa(nfa1, nfa2), frsh2
-    |Star(regexp) -> let (nfa, frsh) = nfa_of_regexp regexp freshtate t in
-                      star_nfa nfa t, frsh
+    |Star(regexp) -> let (nfa, frsh) =(nfa_of_regexp regexp freshtate t) in
+                      (star_nfa nfa t, frsh)
 
 
 
