@@ -103,7 +103,7 @@ let list_regexp : (regexp * (string -> token option)) list =
     (keyword_regexp ">",       fun s -> Some (SYM_GT));
     (keyword_regexp "<=",      fun s -> Some (SYM_LEQ));
     (keyword_regexp ">=",      fun s -> Some (SYM_GEQ));
-    (identifier_material,        fun s -> Some (SYM_IDENTIFIER s));
+    (* (identifier_material,        fun s -> Some (SYM_IDENTIFIER s));
     (char_regexp 'a',       fun s -> Some (SYM_EOF));
     (char_regexp '!',       fun s -> Some (SYM_BOOL_NOT));
     (keyword_regexp "&&",       fun s -> Some (SYM_BOOL_AND));
@@ -117,7 +117,7 @@ let list_regexp : (regexp * (string -> token option)) list =
     (keyword_regexp "include ",       fun s -> Some (SYM_INCLUDE s));
     (keyword_regexp "alloc",       fun s -> Some (SYM_ALLOC));
     (any_string_regexp,       fun s -> Some (SYM_STRING s));
-    (any_char_regexp,       fun s -> Some (SYM_CHARACTER s.[0]));
+    (any_char_regexp,       fun s -> Some (SYM_CHARACTER s.[0])); *)
 
     (* end TODO *)
     (Cat(keyword_regexp "//",
