@@ -45,7 +45,7 @@ let empty_nfa =
   }
 
 (* Concaténation de NFAs.  *)
-let cat_nfa n1 n2 =
+let cat_nfa (n1 : nfa) (n2 : nfa) : nfa =
    (* TODO *)
   let rec parcours (etat : nfa_state) (liste : nfa_state list) (accumulateur : (char set option * nfa_state) list) : (char set option * nfa_state) list= 
   match liste with
@@ -126,12 +126,12 @@ let rec nfa_of_regexp r freshstate t =
    (* TODO *)
    | Cat(regexp1, regexp2)-> let (nfa1, frsh1) = (nfa_of_regexp regexp1 freshstate t) in
                             let (nfa2, frsh2) = (nfa_of_regexp regexp2 frsh1 t) in
-                            (cat_nfa(nfa1, nfa2),frsh2)
+                            ((cat_nfa nfa1 nfa2),frsh2)
 
     | Alt(regexp1, regexp2)-> let (nfa1, frsh1) = (nfa_of_regexp regexp1 freshstate t) in
                             let (nfa2, frsh2) = nfa_of_regexp regexp2 frsh1 t in
-                            alt_nfa(nfa1, nfa2), frsh2
-    |Star(regexp) -> let (nfa, frsh) =(nfa_of_regexp regexp freshtate t) in
+                            (alt_nfa nfa1 nfa2), frsh2
+    |Star(regexp) -> let (nfa, frsh) =(nfa_of_regexp regexp freshstate t) in
                       (star_nfa nfa t, frsh)
 
 
@@ -175,33 +175,39 @@ type dfa =
 let epsilon_closure (n: nfa) (s: nfa_state) : nfa_state set =
   (* La fonction [traversal visited s] effectue un parcours de l'automate en
      partant de l'état [s], et en suivant uniquement les epsilon-transitions. *)
-  let rec traversal (visited: nfa_state set) (s: nfa_state) : nfa_state set =
+  let rec add_eps_set (to_visit : nfa_state list) (eps_clos : nfa_state set) (visited : nfa_state set) (s : nfa_state)  = 
+    if Set.mem s visited then to_visit, eps_clos, visited
+    else let visited_new = Set.add s visited in
+         let transitions = n.nfa_step s in
+         let transitions_eps = List.filter (fun (t,q) -> (t = None)&&(not(Set.mem q visited_new))&&(not(List.mem q to_visit)) ) transitions in
+         let eps_clos_new = Set.union eps_clos (Set.of_list (List.map (fun (t,q) -> q) transitions_eps)) in
+         let to_visit_new =  to_visit@((List.map (fun (t,q) -> q) transitions_eps)) in
+         to_visit_new, eps_clos_new, visited_new
+  in let rec traversal (to_visit : nfa_state list) (eps_clos : nfa_state set) (visited: nfa_state set) : nfa_state set =
          (* TODO *)
-         let rec parcours_epsilon liste = 
-          match liste with 
-          |[] -> ()
-          |(None, q)::queue-> (if Set.mem q visited then () else Set.add q visited; traversal visited q); parcours_epsilon queue
-          |tete::queue -> parcours_epsilon queue
-         in parcours_epsilon (n.nfa_step s);
-         visited
+        match to_visit with
+        | [] -> eps_clos
+        | (s::ss) -> let (to_visit_new, eps_clos_new, visited_new) = add_eps_set ss eps_clos visited s in
+                     traversal to_visit_new eps_clos_new visited_new
+         
+
+    
   in
-  traversal Set.empty s
+  traversal (s::[]) (Set.singleton s) Set.empty 
 
 (* [epsilon_closure_set n ls] calcule l'union des epsilon-fermeture de chacun
    des états du NFA [n] dans l'ensemble [ls]. *)
 
 let epsilon_closure_set (n: nfa) (ls: nfa_state set) : nfa_state set =
    (* TODO *)
-
-   let ref ensemble = ls in
    let ajout (s: nfa_state) (ensemble : nfa_state set): nfa_state set =
-      Set.union ensemble (epsilon_closure s)
+      Set.union ensemble (epsilon_closure n s)
     in (Set.fold ajout ls ls) 
      
 
 (* [dfa_initial_state n] calcule l'état initial de l'automate déterminisé. *)
 let dfa_initial_state (n: nfa) : dfa_state =
-   epsilon_closure_set (Set.of_list n.nfa_initial)
+   epsilon_closure_set n (Set.of_list n.nfa_initial)
 
 (* Construction de la table de transitions de l'automate DFA. *)
 
@@ -215,8 +221,7 @@ let dfa_initial_state (n: nfa) : dfa_state =
    On transforme cet ensemble [t] de la manière suivante :
 
    - on jette les epsilon-transitions : [assoc_throw_none]
-   - on transforme chaque transition ({c1,c2,..,cn}, q) en une liste de
-     transitions [(c1,q); (c2,q); ...; (cn,q)] : [assoc_distribute_key]
+      transitions [(c1,q); (c2,q); ...; (cn,q)] : [assoc_distribute_key]
    - on fusionne les transitions qui consomment le même caractère:
      [(c1,q1);(c1,q2);...;(c1,qn);(c2,q'1);...(c2,q'm)] ->
      [(c1,{q1,q2,...,qn});(c2,{q'1,...,q'm})] : [assoc_merge_vals]
@@ -263,7 +268,7 @@ let rec build_dfa_table (table: (dfa_state, (char * dfa_state) list) Hashtbl.t)
          let transi_sans_eps = assoc_throw_none transi_totales in
          let transi_distrib_key = assoc_distribute_key transi_sans_eps in
          let transit_merge = assoc_merge_vals transi_distrib_key in
-         List.map (fun (a,b)-> (a, (epsilon_closure_set b))) transit_merge
+         (List.map (fun (a,b)-> (a, (epsilon_closure_set n b))) transit_merge)
       in
     Hashtbl.replace table ds transitions;
     List.iter (build_dfa_table table n) (List.map snd transitions)
@@ -309,12 +314,16 @@ let min_priority (l: token list) : token option =
 let dfa_final_states (n: nfa) (dfa_states: dfa_state list) :
   (dfa_state * (string -> token option)) list  =
    (* TODO *)
-   let rec parcours_final_dfa list accumulateur = match list with
-   | [] -> accumulateur
-   | tete::queue -> let final_set = Set.filter (fun x -> List.mem_assoc x d.dfa_final) tete in
-                    if (Set.empty final_set) then parcours_final_dfa queue accumulateur
-                    else parcours_final_dfa (tete, fun s -> min_priority ((List.map (fun (_,b)-> b s) (Set.elements final_set)))
-  in parcours_final_dfa dfa_states [] 
+   (*
+    let dfa_final_states_aux (table: (dfa_state, (char * dfa_state) list) Hashtbl.t) (dfa_states: dfa_state list) :
+      (dfa_state * (string -> token option)) list =
+        List.map (fun dfa_state ->
+          let transitions = Hashtbl.find_option table dfa_state in
+          let token = min_priority (List.map (fun (c,q) -> n.nfa_step c) transitions) in
+          (dfa_state, token)
+        ) dfa_states in
+    dfa_final_states_aux (build_dfa_table Hashtbl.empty n dfa_states) dfa_states
+    *) []
 
 (* Construction de la relation de transition du DFA. *)
 
@@ -401,8 +410,8 @@ let tokenize_one (d : dfa) (w: char list) : lexer_result * char list =
             |Some(qnext)-> let funct_opt = List.assoc_opt qnext d.dfa_final and new_tok = tete::current_token in
                             match funct_opt with 
                             |None-> recognize qnext queue new_tok last_accepted
-                            |Some(t) -> let tok = t (string_of_char_list (List.rev new_tok)) in
-                                        recognize qnext queue new_tok (LRToken(tok), queue)  
+                            |Some(t) -> let Some(tok) = t (string_of_char_list (List.rev new_tok)) in
+                                        recognize qnext queue new_tok (LRtoken(tok), queue)  
   in
   recognize d.dfa_initial w [] (LRerror, w)
 

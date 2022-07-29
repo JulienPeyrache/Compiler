@@ -1,0 +1,1 @@
+Il faut, si les tests ne fonctionnent pas, se placer dans le dossier "src" et réutiliser dans bash la commande "source /.profile"
