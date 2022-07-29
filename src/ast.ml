@@ -23,13 +23,14 @@ open BatPrintf
 
 *)
 
-type tag = Tassign | Tif | Twhile | Tblock | Treturn | Tprint
+type tag = Tassign | Tif | Twhile | Tblock | Treturn | Tprint |Telse
          | Tint
          | Tadd | Tmul | Tdiv | Tmod | Txor | Tsub
          | Tclt | Tcgt | Tcle | Tcge | Tceq | Tne
          | Tneg
          | Tlistglobdef
          | Tfundef | Tfunname | Tfunargs | Tfunbody
+         | Tlistinstr
          | Tassignvar
          | Targ 
 
@@ -49,6 +50,7 @@ type ast = (string * astfun) list
 let string_of_tag = function
   | Tassign -> "Tassign"
   | Tif -> "Tif"
+  | Telse -> "Telse"
   | Twhile -> "Twhile"
   | Tblock -> "Tblock"
   | Treturn -> "Treturn"
@@ -74,6 +76,7 @@ let string_of_tag = function
   | Tfunbody -> "Tfunbody"
   | Tassignvar -> "Tassignvar"
   | Targ -> "Targ"
+  | Tlistinstr -> "Tlistinstr"
 
 
 (* Écrit un fichier .dot qui correspond à un AST *)
