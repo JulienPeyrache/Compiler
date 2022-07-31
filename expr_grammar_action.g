@@ -9,8 +9,8 @@ non-terminals FUNDEF
 non-terminals ADD_EXPRS ADD_EXPR
 non-terminals MUL_EXPRS MUL_EXPR
 non-terminals BOOL_EXPR
-non-terminals CMP_EXPRS CMP_EXPR
-non-terminals EQ_EXPRS EQ_EXPR
+non-terminals CMP_EXPR
+non-terminals EQ_EXPR
 axiom S
 {
 
@@ -84,7 +84,12 @@ INSTR -> IDENTIFIER SYM_ASSIGN EXPR SYM_SEMICOLON {Node(Tassign, [$1; $3])}
 ELSE -> SYM_ELSE SYM_LBRACE LINSTRS SYM_RBRACE {Node(Telse,$3)}
 ELSE -> {NullLeaf}
 
-EXPR -> ADD_EXPRS BOOL_EXPR {$1}
+EXPR -> ADD_EXPRS BOOL_EXPR {
+  { 
+match $2 with 
+|Node(tree_tag, tree::[]) -> Node(tree_tag, [$1; tree])
+|_ -> $1
+  }
 
 BOOL_EXPR -> CMP_EXPR {$1}
 BOOL_EXPR -> EQ_EXPR {$1}
@@ -117,14 +122,45 @@ MUL_EXPR -> SYM_DIV FACTOR MUL_EXPR {resolve_associativity(Tdiv, $2, $3)}
 MUL_EXPR -> SYM_MOD FACTOR MUL_EXPR {resolve_associativity(Tmod, $2, $3)}
 MUL_EXPR -> {NullLeaf}
 
-CMP_EXPR -> SYM_LT ADD_EXPRS BOOL_EXPR
+
+CMP_EXPR -> SYM_LT ADD_EXPRS BOOL_EXPR 
+{
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tclt, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+}
 CMP_EXPR -> SYM_LEQ ADD_EXPRS BOOL_EXPR
+{
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tcle, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+}
 CMP_EXPR -> SYM_GT ADD_EXPRS BOOL_EXPR
+{
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tcgt, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+}
 CMP_EXPR -> SYM_GEQ ADD_EXPRS BOOL_EXPR
+{
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tcge, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+}
 
 
 EQ_EXPR -> SYM_EQUALITY ADD_EXPRS BOOL_EXPR
+{
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tceq, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+}
 EQ_EXPR -> SYM_NOTEQ ADD_EXPRS BOOL_EXPR
+{
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tne, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+}
 
 FACTOR -> SYM_MINUS FACTOR {Node(Tneg, [$2])}
 FACTOR -> IDENTIFIER {$1}

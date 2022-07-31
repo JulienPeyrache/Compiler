@@ -44,9 +44,10 @@ let binop_of_tag =
 let rec make_eexpr_of_ast (a: tree) : expr res =
   let res =
     match a with
-    | Node(t, [e1; e2]) when tag_is_binop t ->
-         Error (Printf.sprintf "Unacceptable ast in make_eexpr_of_ast %s"
-                        (string_of_ast a))
+    | Node(t, [e1; e2]) when tag_is_binop t -> (Ebinop(binop_of_tag t, make_eexpr_of_ast e1, make_eexpr_of_ast e2))
+    | Node(Tneg, [e1])  -> OK (Eunop(Eneg, make_eexpr_of_ast e1))
+    | StringLeaf s -> OK (Evar s)
+    | IntLeaf i -> OK (Eint i)
     | _ -> Error (Printf.sprintf "Unacceptable ast in make_eexpr_of_ast %s"
                     (string_of_ast a))
   in
@@ -58,6 +59,12 @@ let rec make_eexpr_of_ast (a: tree) : expr res =
 let rec make_einstr_of_ast (a: tree) : instr res =
   let res =
     match a with
+    | Node(Tassign, [StringLeaf s; e1]) -> OK (Iassign(s, make_eexpr_of_ast e1))
+    | Node(Tif, [e1; e2; e3]) -> OK (Iif(make_eexpr_of_ast e1, make_einstr_of_ast e2, make_einstr_of_ast e3))
+    | Node(Twhile, [e1; e2]) -> OK (Iwhile(make_eexpr_of_ast e1, make_einstr_of_ast e2))
+    | Node(Treturn, [e1]) -> OK (Ireturn(make_eexpr_of_ast e1))
+    | Node(Tprint, [e1]) -> OK (Iprint(make_eexpr_of_ast e1))
+    | Node(Tblock, l) -> OK (Iblock(List.map make_einstr_of_ast l))
     | _ -> Error (Printf.sprintf "Unacceptable ast in make_einstr_of_ast %s"
                     (string_of_ast a))
   in
