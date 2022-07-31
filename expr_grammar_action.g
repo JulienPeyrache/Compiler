@@ -8,6 +8,7 @@ non-terminals IDENTIFIER INTEGER
 non-terminals FUNDEF
 non-terminals ADD_EXPRS ADD_EXPR
 non-terminals MUL_EXPRS MUL_EXPR
+non-terminals BOOL_EXPR
 non-terminals CMP_EXPRS CMP_EXPR
 non-terminals EQ_EXPRS EQ_EXPR
 axiom S
@@ -21,9 +22,32 @@ axiom S
   open Utils
 
    (* TODO *)
-  let resolve_associativity term other =
+  
+  let rec renverser_peigne_binaire (peigne : tree) : tree ->
+  match peigne with
+  |Node(t1, tree1::tree2::[]) -> match tree2 with
+    |Node(t2, tree3::tree4::[]) -> let peigne2 = Node(t2, [Node(t1, [tree1;tree3]) ; tree4]) in renverser_peigne_binaire peigne2
+    |_ -> peigne
+  | _ -> peigne
+
+  let resolve_associativity tree_tag term other =
       (* TODO *)
-    term
+    match other with 
+    | Node(t, tree1::[]) -> Node(tree_tag, [Node(t, [term; tree1])]) 
+    | _ -> Node(tree_tag, [term; other])
+
+
+  
+  
+  
+  
+  (tree_tag : tag) (tree1 : tree) (tree2 : tree) : tree = 
+  match tree2 with
+ | Node(tag2, t::q) -> 
+ | StringLeaf of string -> Node(tree_tag, [tree1; tree2])
+ | IntLeaf of int -> Node(tree_tag, [tree1; tree2])
+ | NullLeaf -> tree1
+ | CharLeaf(c) -> Node(tree_tag, [tree1; tree2])
 
 
 }
@@ -60,37 +84,52 @@ INSTR -> IDENTIFIER SYM_ASSIGN EXPR SYM_SEMICOLON {Node(Tassign, [$1; $3])}
 ELSE -> SYM_ELSE SYM_LBRACE LINSTRS SYM_RBRACE {Node(Telse,$3)}
 ELSE -> {NullLeaf}
 
+EXPR -> ADD_EXPRS BOOL_EXPR {$1}
 
-EXPR -> SYM_MINUS EXPR
-EXPR -> IDENTIFIER
-EXPR -> INTEGER
+BOOL_EXPR -> CMP_EXPR {$1}
+BOOL_EXPR -> EQ_EXPR {$1}
+BOOL_EXPR -> {NullLeaf}
+
 
 ADD_EXPRS -> MUL_EXPRS ADD_EXPR 
+{ 
+match $2 with 
+|Node(tree_tag, tree::[]) -> renverser_peigne_binaire (Node(tree_tag, [$1; tree]))
+|_ -> $1
+}
 
-ADD_EXPR -> SYM_PLUS MUL_EXPRS ADD_EXPR
+ADD_EXPR -> SYM_PLUS MUL_EXPRS ADD_EXPR 
+{resolve_associativity(Tadd, $2, $3)}
 ADD_EXPR -> SYM_MINUS MUL_EXPRS ADD_EXPR
+{resolve_associativity(Tsub, $2, $3)}
 ADD_EXPR -> {NullLeaf}
 
 
-MUL_EXPRS -> EXPR MUL_EXPR
+MUL_EXPRS -> FACTOR MUL_EXPR
+{ 
+match $2 with 
+|Node(tree_tag, tree::[]) -> renverser_peigne_binaire (Node(tree_tag, [$1; tree]))
+|_ -> $1
+}
 
-MUL_EXPR -> SYM_ASTERISK EXPR MUL_EXPR
-MUL_EXPR -> SYM_DIV EXPR MUL_EXPR
-MUL_EXPR -> SYM_MOD EXPR MUL_EXPR
+MUL_EXPR -> SYM_ASTERISK FACTOR MUL_EXPR {resolve_associativity(Tmul, $2, $3)}
+MUL_EXPR -> SYM_DIV FACTOR MUL_EXPR {resolve_associativity(Tdiv, $2, $3)}
+MUL_EXPR -> SYM_MOD FACTOR MUL_EXPR {resolve_associativity(Tmod, $2, $3)}
 MUL_EXPR -> {NullLeaf}
 
-CMP_EXPRS -> ADD_EXPRS CMP_EXPR
+CMP_EXPR -> SYM_LT ADD_EXPRS BOOL_EXPR
+CMP_EXPR -> SYM_LEQ ADD_EXPRS BOOL_EXPR
+CMP_EXPR -> SYM_GT ADD_EXPRS BOOL_EXPR
+CMP_EXPR -> SYM_GEQ ADD_EXPRS BOOL_EXPR
 
-CMP_EXPR -> SYM_LT ADD_EXPRS CMP_EXPR
-CMP_EXPR -> SYM_LEQ ADD_EXPRS CMP_EXPR
-CMP_EXPR -> SYM_GT ADD_EXPRS CMP_EXPR
-CMP_EXPR -> SYM_GEQ ADD_EXPRS CMP_EXPR
-CMP_EXPR -> {NullLeaf}
 
-EQ_EXPRS -> ADD_EXPRS EQ_EXPR
+EQ_EXPR -> SYM_EQUALITY ADD_EXPRS BOOL_EXPR
+EQ_EXPR -> SYM_NOTEQ ADD_EXPRS BOOL_EXPR
 
-EQ_EXPR -> SYM_EQUALITY ADD_EXPRS EQ_EXPR
-EQ_EXPR -> SYM_NOTEQ ADD_EXPRS EQ_EXPR
+FACTOR -> SYM_MINUS FACTOR {Node(Tneg, [$2])}
+FACTOR -> IDENTIFIER {$1}
+FACTOR -> INTEGER {$1}
+
 
 IDENTIFIER -> SYM_IDENTIFIER {StringLeaf ($1)}
 
