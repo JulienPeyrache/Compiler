@@ -4,17 +4,19 @@
 <table> <tr id='rule-1' style='border-top: solid 1px;'><td class='left'>(1)</td> <td class='left'> <span id='nt-S'>S</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-FUNDEF' style='color: black;'>FUNDEF</a> SYM_EOF</td><td class='left'><pre>  Node (Tlistglobdef, [$1]) </pre></td></tr>
 
  <tr id='rule-2' style='border-top: solid 1px;'><td class='left'>(2)</td> <td class='left'> <span id='nt-FUNDEF'>FUNDEF</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-IDENTIFIER' style='color: black;'>IDENTIFIER</a> SYM_LPARENTHESIS <a href='#nt-LPARAMS' style='color: black;'>LPARAMS</a> SYM_RPARENTHESIS <a href='#nt-LINSTRS' style='color: black;'>LINSTRS</a></td><td class='left'><pre>
-      let fargs = $3 in
-      let instr = $5 in
-      Node (Tfundef, [$1; Node (Tfunargs, fargs) ; instr ])
+      Node (Tfundef, [$1; $3; $5])
   </pre></td></tr>
 
  <tr id='rule-3' style='border-top: solid 1px;'><td class='left'>(3)</td> <td class='left'> <span id='nt-IDENTIFIER'>IDENTIFIER</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_IDENTIFIER</td><td class='left'><pre>StringLeaf ($1)</pre></td></tr>
 
- <tr id='rule-4' style='border-top: solid 1px;'><td class='left'>(4)</td> <td class='left'> <span id='nt-LPARAMS'>LPARAMS</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-EXPR' style='color: black;'>EXPR</a> <a href='#nt-REST_PARAMS' style='color: black;'>REST_PARAMS</a></td><td class='left'><pre></pre></td></tr>
+ <tr id='rule-4' style='border-top: solid 1px;'><td class='left'>(4)</td> <td class='left'> <span id='nt-LPARAMS'>LPARAMS</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-EXPR' style='color: black;'>EXPR</a> <a href='#nt-REST_PARAMS' style='color: black;'>REST_PARAMS</a></td><td class='left'><pre> arbre_list Node(Tfunargs, [$1]) $2</pre></td></tr>
  <tr id='rule-5' style='border: none;'><td class='left'>(5)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'> &epsilon;</td><td class='left'><pre>NullLeaf</pre></td></tr>
 
- <tr id='rule-6' style='border-top: solid 1px;'><td class='left'>(6)</td> <td class='left'> <span id='nt-EXPR'>EXPR</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>$1</pre></td></tr>
+ <tr id='rule-6' style='border-top: solid 1px;'><td class='left'>(6)</td> <td class='left'> <span id='nt-EXPR'>EXPR</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre> 
+match $2 with 
+|Node(tree_tag, tree::[]) -> Node(tree_tag, [$1; tree])
+|_ -> $1
+  </pre></td></tr>
 
  <tr id='rule-7' style='border-top: solid 1px;'><td class='left'>(7)</td> <td class='left'> <span id='nt-ADD_EXPRS'>ADD_EXPRS</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-MUL_EXPRS' style='color: black;'>MUL_EXPRS</a> <a href='#nt-ADD_EXPR' style='color: black;'>ADD_EXPR</a></td><td class='left'><pre> 
 match $2 with 
@@ -47,19 +49,47 @@ match $2 with
  <tr id='rule-21' style='border: none;'><td class='left'>(21)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-EQ_EXPR' style='color: black;'>EQ_EXPR</a></td><td class='left'><pre>$1</pre></td></tr>
  <tr id='rule-22' style='border: none;'><td class='left'>(22)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'> &epsilon;</td><td class='left'><pre>NullLeaf</pre></td></tr>
 
- <tr id='rule-23' style='border-top: solid 1px;'><td class='left'>(23)</td> <td class='left'> <span id='nt-CMP_EXPR'>CMP_EXPR</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_LT <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre></pre></td></tr>
- <tr id='rule-24' style='border: none;'><td class='left'>(24)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_LEQ <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre></pre></td></tr>
- <tr id='rule-25' style='border: none;'><td class='left'>(25)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_GT <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre></pre></td></tr>
- <tr id='rule-26' style='border: none;'><td class='left'>(26)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_GEQ <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre></pre></td></tr>
+ <tr id='rule-23' style='border-top: solid 1px;'><td class='left'>(23)</td> <td class='left'> <span id='nt-CMP_EXPR'>CMP_EXPR</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_LT <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tclt, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+</pre></td></tr>
+ <tr id='rule-24' style='border: none;'><td class='left'>(24)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_LEQ <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tcle, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+</pre></td></tr>
+ <tr id='rule-25' style='border: none;'><td class='left'>(25)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_GT <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tcgt, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+</pre></td></tr>
+ <tr id='rule-26' style='border: none;'><td class='left'>(26)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_GEQ <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tcge, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+</pre></td></tr>
 
- <tr id='rule-27' style='border-top: solid 1px;'><td class='left'>(27)</td> <td class='left'> <span id='nt-EQ_EXPR'>EQ_EXPR</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_EQUALITY <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre></pre></td></tr>
- <tr id='rule-28' style='border: none;'><td class='left'>(28)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_NOTEQ <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre></pre></td></tr>
+ <tr id='rule-27' style='border-top: solid 1px;'><td class='left'>(27)</td> <td class='left'> <span id='nt-EQ_EXPR'>EQ_EXPR</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_EQUALITY <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tceq, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+</pre></td></tr>
+ <tr id='rule-28' style='border: none;'><td class='left'>(28)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_NOTEQ <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>
+match $3 with
+|Node(tree_tag, tree::[]) -> Node(Tne, [Node(tree_tag, [$2; tree])])
+|_ -> Node(Tclt, [$2])
+</pre></td></tr>
 
- <tr id='rule-29' style='border-top: solid 1px;'><td class='left'>(29)</td> <td class='left'> <span id='nt-REST_PARAMS'>REST_PARAMS</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_COMMA <a href='#nt-EXPR' style='color: black;'>EXPR</a> <a href='#nt-REST_PARAMS' style='color: black;'>REST_PARAMS</a></td><td class='left'><pre></pre></td></tr>
+ <tr id='rule-29' style='border-top: solid 1px;'><td class='left'>(29)</td> <td class='left'> <span id='nt-REST_PARAMS'>REST_PARAMS</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_COMMA <a href='#nt-EXPR' style='color: black;'>EXPR</a> <a href='#nt-REST_PARAMS' style='color: black;'>REST_PARAMS</a></td><td class='left'><pre>
+  match $3 with 
+  | NullLeaf-> $2
+  |_->Node(Targ, $2::$3::[])
+  </pre></td></tr>
  <tr id='rule-30' style='border: none;'><td class='left'>(30)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'> &epsilon;</td><td class='left'><pre>NullLeaf</pre></td></tr>
 
- <tr id='rule-31' style='border-top: solid 1px;'><td class='left'>(31)</td> <td class='left'> <span id='nt-LINSTRS'>LINSTRS</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_LBRACE <a href='#nt-INSTR' style='color: black;'>INSTR</a> <a href='#nt-INSTRS' style='color: black;'>INSTRS</a> SYM_RBRACE</td><td class='left'><pre>Node(Tblock, [$2; $3])</pre></td></tr>
- <tr id='rule-32' style='border: none;'><td class='left'>(32)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-INSTR' style='color: black;'>INSTR</a></td><td class='left'><pre>Node(Tlistinstr, [$1])</pre></td></tr>
+ <tr id='rule-31' style='border-top: solid 1px;'><td class='left'>(31)</td> <td class='left'> <span id='nt-LINSTRS'>LINSTRS</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_LBRACE <a href='#nt-INSTR' style='color: black;'>INSTR</a> <a href='#nt-INSTRS' style='color: black;'>INSTRS</a> SYM_RBRACE</td><td class='left'><pre>arbre_listNode(Tblock, [$2]) $3</pre></td></tr>
+ <tr id='rule-32' style='border: none;'><td class='left'>(32)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-INSTR' style='color: black;'>INSTR</a></td><td class='left'><pre>$1</pre></td></tr>
 
  <tr id='rule-33' style='border-top: solid 1px;'><td class='left'>(33)</td> <td class='left'> <span id='nt-INSTR'>INSTR</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_IF SYM_LPARENTHESIS <a href='#nt-EXPR' style='color: black;'>EXPR</a> SYM_RPARENTHESIS SYM_LBRACE <a href='#nt-LINSTRS' style='color: black;'>LINSTRS</a> SYM_RBRACE <a href='#nt-ELSE' style='color: black;'>ELSE</a> SYM_SEMICOLON</td><td class='left'><pre> Node (Tif, [$3; $6; $8]) </pre></td></tr>
  <tr id='rule-34' style='border: none;'><td class='left'>(34)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_RETURN <a href='#nt-EXPR' style='color: black;'>EXPR</a> SYM_SEMICOLON</td><td class='left'><pre>Node(Treturn, [$2])</pre></td></tr>
@@ -70,7 +100,11 @@ match $2 with
  <tr id='rule-38' style='border-top: solid 1px;'><td class='left'>(38)</td> <td class='left'> <span id='nt-ELSE'>ELSE</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_ELSE SYM_LBRACE <a href='#nt-LINSTRS' style='color: black;'>LINSTRS</a> SYM_RBRACE</td><td class='left'><pre>Node(Telse,$3)</pre></td></tr>
  <tr id='rule-39' style='border: none;'><td class='left'>(39)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'> &epsilon;</td><td class='left'><pre>NullLeaf</pre></td></tr>
 
- <tr id='rule-40' style='border-top: solid 1px;'><td class='left'>(40)</td> <td class='left'> <span id='nt-INSTRS'>INSTRS</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-INSTR' style='color: black;'>INSTR</a> <a href='#nt-INSTRS' style='color: black;'>INSTRS</a></td><td class='left'><pre>Node(Tlistinstr, [$1; $2])</pre></td></tr>
+ <tr id='rule-40' style='border-top: solid 1px;'><td class='left'>(40)</td> <td class='left'> <span id='nt-INSTRS'>INSTRS</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-INSTR' style='color: black;'>INSTR</a> <a href='#nt-INSTRS' style='color: black;'>INSTRS</a></td><td class='left'><pre>
+match $2 with
+|NullLeaf -> $1
+|_ -> Node(Targ, [$1; $2])
+</pre></td></tr>
  <tr id='rule-41' style='border: none;'><td class='left'>(41)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'> &epsilon;</td><td class='left'><pre>NullLeaf</pre></td></tr>
 
 </table>

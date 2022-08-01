@@ -30,7 +30,6 @@ type tag = Tassign | Tif | Twhile | Tblock | Treturn | Tprint |Telse
          | Tneg
          | Tlistglobdef
          | Tfundef | Tfunname | Tfunargs | Tfunbody
-         | Tlistinstr
          | Tassignvar
          | Targ 
 
@@ -76,7 +75,7 @@ let string_of_tag = function
   | Tfunbody -> "Tfunbody"
   | Tassignvar -> "Tassignvar"
   | Targ -> "Targ"
-  | Tlistinstr -> "Tlistinstr"
+
 
 
 (* Écrit un fichier .dot qui correspond à un AST *)

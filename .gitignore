@@ -1,5 +1,6 @@
 src/_build
 src/generated_parser.ml
+grammar.html
 src/config.ml
 **/*.native
 skeleton

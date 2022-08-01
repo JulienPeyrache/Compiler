@@ -60,9 +60,7 @@ rules
 S -> FUNDEF SYM_EOF {  Node (Tlistglobdef, [$1]) }
 
 FUNDEF -> IDENTIFIER SYM_LPARENTHESIS LPARAMS SYM_RPARENTHESIS LINSTRS {
-      let fargs = $3 in
-      let instr = $5 in
-      Node (Tfundef, [$1; $3; instr ])
+      Node (Tfundef, [$1; $3; $5])
   }
 
 LPARAMS -> EXPR REST_PARAMS { arbre_list Node(Tfunargs, [$1]) $2}
@@ -87,7 +85,8 @@ match $2 with
 }
 INSTRS -> {NullLeaf}
 
-INSTR -> SYM_IF SYM_LPARENTHESIS EXPR SYM_RPARENTHESIS SYM_LBRACE LINSTRS SYM_RBRACE ELSE SYM_SEMICOLON { Node (Tif, [$3; $6; $8]) }
+INSTR -> SYM_IF SYM_LPARENTHESIS EXPR SYM_RPARENTHESIS SYM_LBRACE LINSTRS SYM_RBRACE ELSE SYM_SEMICOLON 
+{ Node (Tif, [$3; $6; $8]) }
 INSTR -> SYM_RETURN EXPR SYM_SEMICOLON {Node(Treturn, [$2])}
 INSTR -> SYM_PRINT SYM_LPARENTHESIS EXPR SYM_RPARENTHESIS SYM_SEMICOLON {Node(Tprint, [$3])}
 INSTR -> SYM_WHILE SYM_LPARENTHESIS EXPR SYM_RPARENTHESIS LINSTRS SYM_SEMICOLON {Node(Twhile, [$3; $5])}
@@ -96,7 +95,7 @@ INSTR -> IDENTIFIER SYM_ASSIGN EXPR SYM_SEMICOLON {Node(Tassign, [$1; $3])}
 ELSE -> SYM_ELSE SYM_LBRACE LINSTRS SYM_RBRACE {Node(Telse,$3)}
 ELSE -> {NullLeaf}
 
-EXPR -> ADD_EXPRS BOOL_EXPR {
+EXPR -> ADD_EXPRS BOOL_EXPR
   { 
 match $2 with 
 |Node(tree_tag, tree::[]) -> Node(tree_tag, [$1; tree])
