@@ -37,18 +37,20 @@ axiom S
     | _ -> Node(tree_tag, [term; other])
 
 
-  
-  
-  
-  
-  (tree_tag : tag) (tree1 : tree) (tree2 : tree) : tree = 
-  match tree2 with
- | Node(tag2, t::q) -> 
- | StringLeaf of string -> Node(tree_tag, [tree1; tree2])
- | IntLeaf of int -> Node(tree_tag, [tree1; tree2])
- | NullLeaf -> tree1
- | CharLeaf(c) -> Node(tree_tag, [tree1; tree2])
+  let arbre_list arbre1 arbre2 = 
+  let rec arbre_hauteur_1 arbre1 peigne_droit = 
+  match (arbre1, peigne_droit) with 
+  | (Node(t1, list), Node(Targ, tree2::rest_params::[]) -> 
+            arbre_hauteur_1 (Node(t1, tree2::list)) rest_params
+  | (Node(t1, list), NullLeaf) -> arbre1
+  | (Node(t1, list), _) -> Node(t1, peigne_droit::list)
+  | _ -> Error "Ces arbres ne conviennent pas aux conditions de construction."
 
+  in let tree1 = arbre_hauteur_1 arbre1 arbre2 in
+  match tree with
+  |Error msg -> Error msg
+  |Node(tag, liste) -> Node(tag, List.rev liste)
+  |_ -> tree
 
 }
 
@@ -60,19 +62,29 @@ S -> FUNDEF SYM_EOF {  Node (Tlistglobdef, [$1]) }
 FUNDEF -> IDENTIFIER SYM_LPARENTHESIS LPARAMS SYM_RPARENTHESIS LINSTRS {
       let fargs = $3 in
       let instr = $5 in
-      Node (Tfundef, [$1; Node (Tfunargs, fargs) ; instr ])
+      Node (Tfundef, [$1; $3; instr ])
   }
 
-LPARAMS -> EXPR REST_PARAMS 
+LPARAMS -> EXPR REST_PARAMS { arbre_list Node(Tfunargs, [$1]) $2}
 LPARAMS -> {NullLeaf}
 
 REST_PARAMS -> SYM_COMMA EXPR REST_PARAMS 
+{
+  match $3 with 
+  | NullLeaf-> $2
+  |_->Node(Targ, $2::$3::[])
+  }
 REST_PARAMS -> {NullLeaf}
 
-LINSTRS -> SYM_LBRACE INSTR INSTRS SYM_RBRACE {Node(Tblock, [$2; $3])}
-LINSTRS -> INSTR {Node(Tlistinstr, [$1])}
+LINSTRS -> SYM_LBRACE INSTR INSTRS SYM_RBRACE {arbre_listNode(Tblock, [$2]) $3}
+LINSTRS -> INSTR {$1}
 
-INSTRS -> INSTR INSTRS {Node(Tlistinstr, [$1; $2])}
+INSTRS -> INSTR INSTRS 
+{
+match $2 with
+|NullLeaf -> $1
+|_ -> Node(Targ, [$1; $2])
+}
 INSTRS -> {NullLeaf}
 
 INSTR -> SYM_IF SYM_LPARENTHESIS EXPR SYM_RPARENTHESIS SYM_LBRACE LINSTRS SYM_RBRACE ELSE SYM_SEMICOLON { Node (Tif, [$3; $6; $8]) }
