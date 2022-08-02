@@ -44,15 +44,16 @@ let binop_of_tag =
 let rec make_eexpr_of_ast (a: tree) : expr res =
   let res =
     match a with
-    | Node(t, [e1; e2]) when tag_is_binop t -> (Ebinop(binop_of_tag t, make_eexpr_of_ast e1, make_eexpr_of_ast e2))
+    | Node(t, [e1; e2]) when tag_is_binop t -> OK(Ebinop(binop_of_tag t, make_eexpr_of_ast e1, make_eexpr_of_ast e2))
     | Node(Tneg, [e1])  -> OK (Eunop(Eneg, make_eexpr_of_ast e1))
     | StringLeaf s -> OK (Evar s)
     | IntLeaf i -> OK (Eint i)
+    | CharLeaf c -> OK (Evar (String.of_list [c]))
     | _ -> Error (Printf.sprintf "Unacceptable ast in make_eexpr_of_ast %s"
                     (string_of_ast a))
   in
   match res with
-    OK o -> res
+  | OK o -> res
   | Error msg -> Error (Format.sprintf "In make_eexpr_of_ast %s:\n%s"
                           (string_of_ast a) msg)
 
@@ -69,7 +70,7 @@ let rec make_einstr_of_ast (a: tree) : instr res =
                     (string_of_ast a))
   in
   match res with
-    OK o -> res
+  | OK o -> res
   | Error msg -> Error (Format.sprintf "In make_einstr_of_ast %s:\n%s"
                           (string_of_ast a) msg)
 
@@ -85,7 +86,8 @@ let make_fundef_of_ast (a: tree) : (string * efun) res =
   | Node (Tfundef, [StringLeaf fname; Node (Tfunargs, fargs); fbody]) ->
     list_map_res make_ident fargs >>= fun fargs ->
      (* TODO *)
-     Error "make_fundef_of_ast: Not implemented, yet."
+
+     
   | _ ->
     Error (Printf.sprintf "make_fundef_of_ast: Expected a Tfundef, got %s."
              (string_of_ast a))

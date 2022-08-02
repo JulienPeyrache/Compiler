@@ -40,7 +40,7 @@ axiom S
   let arbre_list arbre1 arbre2 = 
   let rec arbre_hauteur_1 arbre1 peigne_droit = 
   match (arbre1, peigne_droit) with 
-  | (Node(t1, list), Node(Targ, tree2::rest_params::[]) -> 
+  | (Node(t1, list), Node(t2, tree2::rest_params::[]) -> 
             arbre_hauteur_1 (Node(t1, tree2::list)) rest_params
   | (Node(t1, list), NullLeaf) -> arbre1
   | (Node(t1, list), _) -> Node(t1, peigne_droit::list)
@@ -63,18 +63,18 @@ FUNDEF -> IDENTIFIER SYM_LPARENTHESIS LPARAMS SYM_RPARENTHESIS LINSTRS {
       Node (Tfundef, [$1; $3; $5])
   }
 
-LPARAMS -> EXPR REST_PARAMS { arbre_list Node(Tfunargs, [$1]) $2}
+LPARAMS -> EXPR REST_PARAMS { arbre_list Node(Tfunargs, [Node(Targ, [$1])]) $2}
 LPARAMS -> {NullLeaf}
 
 REST_PARAMS -> SYM_COMMA EXPR REST_PARAMS 
 {
   match $3 with 
   | NullLeaf-> $2
-  |_->Node(Targ, $2::$3::[])
+  |_->Node(Targ, Node(Targ, $2)::$3::[])
   }
 REST_PARAMS -> {NullLeaf}
 
-LINSTRS -> SYM_LBRACE INSTR INSTRS SYM_RBRACE {arbre_listNode(Tblock, [$2]) $3}
+LINSTRS -> SYM_LBRACE INSTR INSTRS SYM_RBRACE {arbre_list Node(Tblock, [$2]) $3}
 LINSTRS -> INSTR {$1}
 
 INSTRS -> INSTR INSTRS 

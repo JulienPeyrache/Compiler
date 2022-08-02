@@ -12,17 +12,47 @@ let binop_bool_to_int f x y = if f x y then 1 else 0
    et [y]. *)
 let eval_binop (b: binop) : int -> int -> int =
   match b with
+   |Eadd -> fun  x y -> x + y
+   |Esub -> fun  x y -> x - y
+   |Emul -> fun  x y -> x * y
+   |Ediv -> fun  x y -> x / y
+   |Emod -> fun  x y -> x mod y 
+   |Eceq  -> fun  x y -> (x=y)
+   |Ecne -> fun  x y -> (x<>y)
+   |Eclt  -> fun  x y -> (x<y)
+   |Ecgt  -> fun  x y -> (x>y)
+   |Ecle  -> fun  x y -> (x<=y)
+   |Ecge  -> fun  x y -> (x>=y)
+   (* EXOR RESTE À COMPLÉTER*)
    | _ -> fun x y -> 0
 
 (* [eval_unop u x] évalue l'opération unaire [u] sur l'argument [x]. *)
 let eval_unop (u: unop) : int -> int =
   match u with
+  |Eneg -> fun x -> -x
    | _ -> fun x -> 0
 
 (* [eval_eexpr st e] évalue l'expression [e] dans l'état [st]. Renvoie une
    erreur si besoin. *)
 let rec eval_eexpr st (e : expr) : int res =
-   Error "eval_eexpr not implemented yet."
+match e with
+|Ebinop(b,e1,e2) -> 
+  let x = eval_eexpr st e1 in
+  let y = eval_eexpr st e2 in
+  (match x,y with
+  |Ok x,Ok y -> Ok (eval_binop b x y)
+  |Error s, _ -> Error s
+  |_, Error s -> Error s)
+|Eunop(u,e) -> 
+  let x = eval_eexpr st e in
+  (match x with
+  |Ok x -> Ok (eval_unop u x)
+  |Error s -> Error s)
+|Eint n -> Ok n
+|Evar(s) -> match Hashtbl.find_option st.env s with
+  |Some x -> Ok x
+  |None -> Error ("Variable non définie : "^s)
+|_ -> Error "eval_eexpr not implemented yet."
 
 (* [eval_einstr oc st ins] évalue l'instrution [ins] en partant de l'état [st].
 
