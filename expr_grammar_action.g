@@ -5,7 +5,7 @@ tokens SYM_EQUALITY SYM_NOTEQ SYM_LT SYM_LEQ SYM_GT SYM_GEQ
 non-terminals S INSTR INSTRS LINSTRS ELSE EXPR FACTOR
 non-terminals LPARAMS REST_PARAMS
 non-terminals IDENTIFIER INTEGER
-non-terminals FUNDEF
+non-terminals FUNDEF FUNDEFS
 non-terminals ADD_EXPRS ADD_EXPR
 non-terminals MUL_EXPRS MUL_EXPR
 non-terminals BOOL_EXPR
@@ -57,7 +57,17 @@ axiom S
 
 
 rules
-S -> FUNDEF SYM_EOF {  Node (Tlistglobdef, [$1]) }
+S -> FUNDEF FUNDEFS SYM_EOF {
+  arbre_list Node(Tlistglobdef, $1::[]) $2
+  }
+
+FUNDEFS -> FUNDEF FUNDEFS { 
+  match $2 with 
+  | NullLeaf-> $1
+  |_->Node(Tfundef, $1::$2::[])
+}
+FUNDEFS -> { NullLeaf }
+
 
 FUNDEF -> IDENTIFIER SYM_LPARENTHESIS LPARAMS SYM_RPARENTHESIS LINSTRS {
       Node (Tfundef, [$1; $3; $5])
