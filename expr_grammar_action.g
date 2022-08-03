@@ -73,10 +73,10 @@ FUNDEF -> IDENTIFIER SYM_LPARENTHESIS LPARAMS SYM_RPARENTHESIS LINSTRS {
       Node (Tfundef, [$1; $3; $5])
   }
 
-LPARAMS -> EXPR REST_PARAMS { arbre_list Node(Tfunargs, [Node(Targ, [$1])]) $2}
+LPARAMS -> IDENTIFIER REST_PARAMS { arbre_list Node(Tfunargs, [Node(Targ, [$1])]) $2}
 LPARAMS -> {NullLeaf}
 
-REST_PARAMS -> SYM_COMMA EXPR REST_PARAMS 
+REST_PARAMS -> SYM_COMMA IDENTIFIER REST_PARAMS 
 {
   match $3 with 
   | NullLeaf-> $2

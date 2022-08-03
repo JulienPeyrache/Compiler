@@ -8,7 +8,11 @@ open Utils
 (* [vars_in_expr e] renvoie l'ensemble des variables qui apparaissent dans [e]. *)
 let rec vars_in_expr (e: expr) =
    (* TODO *)
-   Set.empty
+   match expr with
+   |Evar(s) -> Set.singleton s
+   |Eint(i) -> Set.empty
+   |Eunop(u,e) -> vars_in_expr e
+   |Ebinop(b,e1,e2) -> Set.union (vars_in_expr e1) (vars_in_expr e2)
 
 (* [live_cfg_node node live_after] renvoie l'ensemble des variables vivantes
    avant un nœud [node], étant donné l'ensemble [live_after] des variables

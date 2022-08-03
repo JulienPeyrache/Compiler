@@ -68,7 +68,45 @@ match e with
    - [st'] est l'état mis à jour. *)
 let rec eval_einstr oc (st: int state) (ins: instr) :
   (int option * int state) res =
-   Error "eval_einstr not implemented yet."
+match ins with
+|Iassign(s,e) ->
+   let x = eval_eexpr st e in
+   match x with
+   |Ok x -> (None, {st with env = Hashtbl.replace st.env s x})
+   |Error msg -> Error msg
+|Iprint(e) ->
+   let x = eval_eexpr st e in
+   match x with
+   |Ok x -> (None, st)
+   |Error msg -> Error msg
+|Ireturn(e) ->
+   let x = eval_eexpr st e in
+   match x with
+   |Ok x -> (Some x, st)
+   |Error msg -> Error msg
+|Iblock liste -> match liste with
+   |[] -> (None, st)
+   |ins::suite ->
+     let (ret, st') = eval_einstr oc st ins in
+     match ret with
+     |Some x -> (Some x, st')
+     |None -> eval_einstr oc st' Iblock(suite)
+|Iif(e,i1,i2) ->
+   let x = eval_eexpr st e in
+   match x with
+   |Ok x -> if x=0 then eval_einstr oc st i2 else eval_einstr oc st i1
+   |Error msg -> Error msg
+|Iwhile(e,i) ->
+   let x = eval_eexpr st e in
+   match x with
+   |Error msg -> Error msg
+   |Ok x -> if x=0 then (None, st) else 
+       let (ret, st') = eval_einstr oc st i in
+       match ret with
+       |Some _ -> (ret, st')
+       |None -> eval_einstr oc st' ins
+|_ -> Error "eval_einstr not implemented yet."
+
 
 (* [eval_efun oc st f fname vargs] évalue la fonction [f] (dont le nom est
    [fname]) en partant de l'état [st], avec les arguments [vargs].
@@ -118,5 +156,6 @@ let eval_eprog oc (ep: eprog) (memsize: int) (params: int list)
   (* ne garde que le nombre nécessaire de paramètres pour la fonction "main". *)
   let n = List.length f.funargs in
   let params = take n params in
+  List.iter2 (fun a v -> Hashtbl.replace st.env a v) f.funargs params >>= fun () ->
   eval_efun oc st f "main" params >>= fun (v, st) ->
   OK v
