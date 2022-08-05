@@ -19,7 +19,12 @@ let rec vars_in_expr (e: expr) =
    vivantes après ce nœud. *)
 let live_cfg_node (node: cfg_node) (live_after: string Set.t) =
    (* TODO *)
-   live_after
+   match cfg_node with
+   | Cassign(v,e,s) -> Set.remove v (Set.union (vars_in_expr e) live_after)
+   | Creturn(e) -> Set.union (vars_in_expr e) live_after
+   | Cprint(e,i) -> Set.union (vars_in_expr e) live_after
+   | Ccmp(e, i1, i2) -> Set.union (vars_in_expr e) live_after
+   | Cnop(i) -> live_after
 
 (* [live_after_node cfg n] renvoie l'ensemble des variables vivantes après le
    nœud [n] dans un CFG [cfg]. [lives] est l'état courant de l'analyse,
@@ -27,7 +32,13 @@ let live_cfg_node (node: cfg_node) (live_after: string Set.t) =
    les valeurs sont les ensembles de variables vivantes avant chaque nœud. *)
 let live_after_node cfg n (lives: (int, string Set.t) Hashtbl.t) : string Set.t =
    (* TODO *)
-   Set.empty
+   match Hashtbl.find cfg n with 
+   |(Cnop succ) -> (Hashtbl.find lives succ) 
+   |(Cprint (_, succ)) -> (Hashtbl.find lives succ) 
+   |(Cassign (_, _, succ)) -> (Hashtbl.find lives succ) 
+   |(Creturn _) -> Set.empty   
+   |(Ccmp (_, s1, s2)) -> Set.union (Hashtbl.find lives s1) (Hashtbl.find lives s2)
+   
 
 (* [live_cfg_nodes cfg lives] effectue une itération du calcul de point fixe.
 
