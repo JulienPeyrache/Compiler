@@ -48,7 +48,7 @@ let live_after_node cfg n (lives: (int, string Set.t) Hashtbl.t) : string Set.t 
    nœud a changé). *)
 let live_cfg_nodes cfg (lives : (int, string Set.t) Hashtbl.t) =
    (* TODO *)
-   false
+   
 
 (* [live_cfg_fun f] calcule l'ensemble des variables vivantes avant chaque nœud
    du CFG en itérant [live_cfg_nodes] jusqu'à ce qu'un point fixe soit atteint.
