@@ -24,11 +24,12 @@ axiom S
    (* TODO *)
   
   let rec renverser_peigne_binaire (peigne : tree) : tree ->
-  match peigne with
-  |Node(t1, tree1::tree2::[]) -> match tree2 with
+  (match peigne with
+  |Node(t1, tree1::tree2::[]) -> 
+    (match tree2 with
     |Node(t2, tree3::tree4::[]) -> let peigne2 = Node(t2, [Node(t1, [tree1;tree3]) ; tree4]) in renverser_peigne_binaire peigne2
-    |_ -> peigne
-  | _ -> peigne
+    |_ -> peigne)
+  | _ -> peigne)
 
   let resolve_associativity tree_tag term other =
       (* TODO *)

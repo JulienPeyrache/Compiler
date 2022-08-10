@@ -4,7 +4,6 @@ open BatList
 open Prog
 open Utils
 open Builtins
-open Utils
 
 let binop_bool_to_int f x y = if f x y then 1 else 0
 
@@ -17,20 +16,22 @@ let eval_binop (b: binop) : int -> int -> int =
    |Emul -> fun  x y -> x * y
    |Ediv -> fun  x y -> x / y
    |Emod -> fun  x y -> x mod y 
-   |Eceq  -> fun  x y -> (x=y)
-   |Ecne -> fun  x y -> (x<>y)
-   |Eclt  -> fun  x y -> (x<y)
-   |Ecgt  -> fun  x y -> (x>y)
-   |Ecle  -> fun  x y -> (x<=y)
-   |Ecge  -> fun  x y -> (x>=y)
-   (* EXOR RESTE À COMPLÉTER*)
-   | _ -> fun x y -> 0
+   |Eceq  -> fun  x y -> if (x=y) then 1 else 0
+   |Ecne -> fun  x y -> if (x<>y) then 1 else 0
+   |Eclt  -> fun  x y -> if (x<y) then 1 else 0
+   |Ecgt  -> fun  x y -> if (x>y) then 1 else 0
+   |Ecle  -> fun  x y -> if (x<=y) then 1 else 0
+   |Ecge  -> fun  x y -> if (x>=y) then 1 else 0
+   |Exor -> fun x y -> match (x,y) with 
+                        |(0,0) -> 0
+                        |(0, _ ) -> 1
+                        |(_, 0) -> 1
+                        | _ -> 0
 
 (* [eval_unop u x] évalue l'opération unaire [u] sur l'argument [x]. *)
 let eval_unop (u: unop) : int -> int =
   match u with
-  |Eneg -> fun x -> -x
-   | _ -> fun x -> 0
+  |Eneg -> fun x -> if (x=0) then 1 else 0
 
 (* [eval_eexpr st e] évalue l'expression [e] dans l'état [st]. Renvoie une
    erreur si besoin. *)
@@ -40,19 +41,18 @@ match e with
   let x = eval_eexpr st e1 in
   let y = eval_eexpr st e2 in
   (match x,y with
-  |Ok x,Ok y -> Ok (eval_binop b x y)
+  |OK x,OK y -> OK (eval_binop b x y)
   |Error s, _ -> Error s
   |_, Error s -> Error s)
 |Eunop(u,e) -> 
   let x = eval_eexpr st e in
   (match x with
-  |Ok x -> Ok (eval_unop u x)
+  |OK x -> OK (eval_unop u x)
   |Error s -> Error s)
-|Eint n -> Ok n
+|Eint n -> OK n
 |Evar(s) -> match Hashtbl.find_option st.env s with
-  |Some x -> Ok x
+  |Some x -> OK x
   |None -> Error ("Variable non définie : "^s)
-|_ -> Error "eval_eexpr not implemented yet."
 
 (* [eval_einstr oc st ins] évalue l'instrution [ins] en partant de l'état [st].
 
@@ -66,46 +66,48 @@ match e with
    lieu et que l'exécution doit continuer.
 
    - [st'] est l'état mis à jour. *)
-let rec eval_einstr oc (st: int state) (ins: instr) :
-  (int option * int state) res =
-match ins with
-|Iassign(s,e) ->
+let rec eval_einstr oc (st: int state) (instruction: instr) : ((int option * int state) res) =
+ match instruction with
+ |Iprint e ->
    let x = eval_eexpr st e in
-   match x with
-   |Ok x -> (None, {st with env = Hashtbl.replace st.env s x})
-   |Error msg -> Error msg
-|Iprint(e) ->
+   (function
+   |OK x -> OK (None, st)
+   |Error msg -> Error msg) x 
+|Ireturn e ->
    let x = eval_eexpr st e in
-   match x with
-   |Ok x -> (None, st)
-   |Error msg -> Error msg
-|Ireturn(e) ->
+   (function
+   |OK x -> OK (Some x, st)
+   |Error msg -> Error msg) x
+ |Iassign (s,e) ->
    let x = eval_eexpr st e in
-   match x with
-   |Ok x -> (Some x, st)
-   |Error msg -> Error msg
-|Iblock liste -> match liste with
-   |[] -> (None, st)
+   (match x with
+   |OK x -> Hashtbl.replace st.env s x; OK (None, st)
+   |Error msg -> Error msg)
+|Iblock liste -> 
+   (match liste with
+   |[] -> OK (None, st)
    |ins::suite ->
-     let (ret, st') = eval_einstr oc st ins in
-     match ret with
-     |Some x -> (Some x, st')
-     |None -> eval_einstr oc st' Iblock(suite)
+     eval_einstr oc st instruction >>= fun (ret, st') ->
+     (match ret with
+     |Some x -> OK(Some x, st')
+     |None -> eval_einstr oc st' (Iblock(suite))
+     )
+   )
 |Iif(e,i1,i2) ->
    let x = eval_eexpr st e in
-   match x with
-   |Ok x -> if x=0 then eval_einstr oc st i2 else eval_einstr oc st i1
-   |Error msg -> Error msg
+   (match x with
+   |OK x -> if x=0 then eval_einstr oc st i2 else eval_einstr oc st i1
+   |Error msg -> Error msg)
 |Iwhile(e,i) ->
    let x = eval_eexpr st e in
-   match x with
+   (match x with
    |Error msg -> Error msg
-   |Ok x -> if x=0 then (None, st) else 
-       let (ret, st') = eval_einstr oc st i in
-       match ret with
-       |Some _ -> (ret, st')
-       |None -> eval_einstr oc st' ins
-|_ -> Error "eval_einstr not implemented yet."
+   |OK x -> if x=0 then OK(None, st) 
+            else eval_einstr oc st i >>= fun (ret, st') ->
+               (match ret with
+                  |Some _ -> OK (ret, st')
+                  |None -> eval_einstr oc st' instruction)
+   )
 
 
 (* [eval_efun oc st f fname vargs] évalue la fonction [f] (dont le nom est
@@ -149,6 +151,8 @@ let eval_efun oc (st: int state) ({ funargs; funbody}: efun)
 
    - [Error msg] lorsqu'une erreur survient.
    *)
+
+
 let eval_eprog oc (ep: eprog) (memsize: int) (params: int list)
   : int option res =
   let st = init_state memsize in
@@ -156,6 +160,8 @@ let eval_eprog oc (ep: eprog) (memsize: int) (params: int list)
   (* ne garde que le nombre nécessaire de paramètres pour la fonction "main". *)
   let n = List.length f.funargs in
   let params = take n params in
-  List.iter2 (fun a v -> Hashtbl.replace st.env a v) f.funargs params >>= fun () ->
+  List.iter2 (fun a v -> Hashtbl.replace st.env a v) f.funargs params ; 
   eval_efun oc st f "main" params >>= fun (v, st) ->
   OK v
+
+

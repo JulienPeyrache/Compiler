@@ -84,9 +84,11 @@ let make_ident (a: tree) : string res =
 let make_fundef_of_ast (a: tree) : (string * efun) res =
   match a with
   | Node (Tfundef, [StringLeaf fname; Node (Tfunargs, fargs); fbody]) ->
-    list_map_res make_ident fargs >>= fun fargs -> 
+    let arguments = list_map_res make_ident fargs >>= fun fargs -> 
      (* TODO *)
-    let function = {funargs = fargs; funbody = make_einstr_of_ast fbody} in OK (fname, function)
+    List.map (fun argum -> match argum with |OK(x) -> x | Error msg -> Error msg) fargs
+    in
+    OK(fname, {funargs = arguments; funbody = make_einstr_of_ast fbody})
 
      
   | _ ->
