@@ -44,8 +44,12 @@ let binop_of_tag =
 let rec make_eexpr_of_ast (a: tree) : expr res =
   let res =
     match a with
-    | Node(t, [e1; e2]) when tag_is_binop t -> OK(Ebinop(binop_of_tag t, make_eexpr_of_ast e1, make_eexpr_of_ast e2))
-    | Node(Tneg, [e1])  -> OK (Eunop(Eneg, make_eexpr_of_ast e1))
+    | Node(t, [e1; e2]) when tag_is_binop t -> (match make_eexpr_of_ast e1, make_eexpr_of_ast e2 with
+                                                |OK exp1, OK exp2 -> OK(Ebinop(binop_of_tag t, exp1, exp2))
+                                                | Error msg, _ -> Error msg
+                                                | _, Error msg -> Error msg
+                                                )
+    | Node(Tneg, [e1])  -> make_eexpr_of_ast e1 >>= fun expression -> OK (Eunop(Eneg, expression))
     | StringLeaf s -> OK (Evar s)
     | IntLeaf i -> OK (Eint i)
     | CharLeaf c -> OK (Evar (String.of_list [c]))
@@ -60,12 +64,12 @@ let rec make_eexpr_of_ast (a: tree) : expr res =
 let rec make_einstr_of_ast (a: tree) : instr res =
   let res =
     match a with
-    | Node(Tassign, [StringLeaf s; e1]) -> OK (Iassign(s, make_eexpr_of_ast e1))
-    | Node(Tif, [e1; e2; e3]) -> OK (Iif(make_eexpr_of_ast e1, make_einstr_of_ast e2, make_einstr_of_ast e3))
-    | Node(Twhile, [e1; e2]) -> OK (Iwhile(make_eexpr_of_ast e1, make_einstr_of_ast e2))
-    | Node(Treturn, [e1]) -> OK (Ireturn(make_eexpr_of_ast e1))
-    | Node(Tprint, [e1]) -> OK (Iprint(make_eexpr_of_ast e1))
-    | Node(Tblock, l) -> OK (Iblock(List.map make_einstr_of_ast l))
+    | Node(Tassign, [StringLeaf s; e1]) -> make_eexpr_of_ast e1 >>= fun expression -> OK (Iassign(s,expression))
+    | Node(Tif, [e1; e2; e3]) -> make_eexpr_of_ast e1 >>= fun expr1 -> make_einstr_of_ast e2 >>= fun instr2 -> make_einstr_of_ast e3 >>= fun instr3 ->OK (Iif(expr1, instr2, instr3))
+    | Node(Twhile, [e1; e2]) -> make_eexpr_of_ast e1 >>= fun expr1 -> make_einstr_of_ast e2 >>= fun expr2 -> OK (Iwhile(expr1, expr2))
+    | Node(Treturn, [e1]) -> make_eexpr_of_ast e1 >>= fun expression -> OK (Ireturn(expression))
+    | Node(Tprint, [e1]) -> make_eexpr_of_ast e1 >>= fun expression -> OK (Iprint(expression))
+    | Node(Tblock, l) -> list_map_res make_einstr_of_ast l >>= fun liste -> OK (Iblock(liste))
     | _ -> Error (Printf.sprintf "Unacceptable ast in make_einstr_of_ast %s"
                     (string_of_ast a))
   in
@@ -84,11 +88,10 @@ let make_ident (a: tree) : string res =
 let make_fundef_of_ast (a: tree) : (string * efun) res =
   match a with
   | Node (Tfundef, [StringLeaf fname; Node (Tfunargs, fargs); fbody]) ->
-    let arguments = list_map_res make_ident fargs >>= fun fargs -> 
+    list_map_res make_ident fargs >>= fun fargs -> 
      (* TODO *)
-    List.map (fun argum -> match argum with |OK(x) -> x | Error msg -> Error msg) fargs
-    in
-    OK(fname, {funargs = arguments; funbody = make_einstr_of_ast fbody})
+    make_einstr_of_ast fbody >>= fun fbody ->
+    OK(fname, {funargs = fargs; funbody = fbody})
 
      
   | _ ->

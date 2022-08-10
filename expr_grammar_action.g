@@ -23,7 +23,7 @@ axiom S
 
    (* TODO *)
   
-  let rec renverser_peigne_binaire (peigne : tree) : tree ->
+  let rec renverser_peigne_binaire (peigne : tree) : tree =
   (match peigne with
   |Node(t1, tree1::tree2::[]) -> 
     (match tree2 with
@@ -31,7 +31,7 @@ axiom S
     |_ -> peigne)
   | _ -> peigne)
 
-  let resolve_associativity tree_tag term other =
+  let resolve_associativity (tree_tag : tag) term other =
       (* TODO *)
     match other with 
     | Node(t, tree1::[]) -> Node(tree_tag, [Node(t, [term; tree1])]) 
@@ -41,17 +41,16 @@ axiom S
   let arbre_list arbre1 arbre2 = 
   let rec arbre_hauteur_1 arbre1 peigne_droit = 
   match (arbre1, peigne_droit) with 
-  | (Node(t1, list), Node(t2, tree2::rest_params::[]) -> 
+  | (Node(t1, list), Node(t2, tree2::rest_params::[])) -> 
             arbre_hauteur_1 (Node(t1, tree2::list)) rest_params
   | (Node(t1, list), NullLeaf) -> arbre1
   | (Node(t1, list), _) -> Node(t1, peigne_droit::list)
-  | _ -> Error "Ces arbres ne conviennent pas aux conditions de construction."
+  | _ -> failwith "Ces arbres ne conviennent pas aux conditions de construction."
 
   in let tree1 = arbre_hauteur_1 arbre1 arbre2 in
-  match tree with
-  |Error msg -> Error msg
+  match tree1 with
   |Node(tag, liste) -> Node(tag, List.rev liste)
-  |_ -> tree
+  |_ -> tree1
 
 }
 
@@ -59,7 +58,7 @@ axiom S
 
 rules
 S -> FUNDEF FUNDEFS SYM_EOF {
-  arbre_list Node(Tlistglobdef, $1::[]) $2
+  arbre_list (Node(Tlistglobdef, $1::[])) $2
   }
 
 FUNDEFS -> FUNDEF FUNDEFS { 
@@ -74,18 +73,18 @@ FUNDEF -> IDENTIFIER SYM_LPARENTHESIS LPARAMS SYM_RPARENTHESIS LINSTRS {
       Node (Tfundef, [$1; $3; $5])
   }
 
-LPARAMS -> IDENTIFIER REST_PARAMS { arbre_list Node(Tfunargs, [Node(Targ, [$1])]) $2}
+LPARAMS -> IDENTIFIER REST_PARAMS { arbre_list (Node(Tfunargs, [Node(Targ, [$1])])) $2}
 LPARAMS -> {NullLeaf}
 
 REST_PARAMS -> SYM_COMMA IDENTIFIER REST_PARAMS 
 {
   match $3 with 
   | NullLeaf-> $2
-  |_->Node(Targ, Node(Targ, $2)::$3::[])
+  |_->Node(Targ, Node(Targ, [$2])::$3::[])
   }
 REST_PARAMS -> {NullLeaf}
 
-LINSTRS -> SYM_LBRACE INSTR INSTRS SYM_RBRACE {arbre_list Node(Tblock, [$2]) $3}
+LINSTRS -> SYM_LBRACE INSTR INSTRS SYM_RBRACE {arbre_list (Node(Tblock, [$2])) $3}
 LINSTRS -> INSTR {$1}
 
 INSTRS -> INSTR INSTRS 
@@ -103,7 +102,7 @@ INSTR -> SYM_PRINT SYM_LPARENTHESIS EXPR SYM_RPARENTHESIS SYM_SEMICOLON {Node(Tp
 INSTR -> SYM_WHILE SYM_LPARENTHESIS EXPR SYM_RPARENTHESIS LINSTRS SYM_SEMICOLON {Node(Twhile, [$3; $5])}
 INSTR -> IDENTIFIER SYM_ASSIGN EXPR SYM_SEMICOLON {Node(Tassign, [$1; $3])}
 
-ELSE -> SYM_ELSE SYM_LBRACE LINSTRS SYM_RBRACE {Node(Telse,$3)}
+ELSE -> SYM_ELSE SYM_LBRACE LINSTRS SYM_RBRACE {Node(Telse,[$3])}
 ELSE -> {NullLeaf}
 
 EXPR -> ADD_EXPRS BOOL_EXPR
@@ -126,9 +125,9 @@ match $2 with
 }
 
 ADD_EXPR -> SYM_PLUS MUL_EXPRS ADD_EXPR 
-{resolve_associativity(Tadd, $2, $3)}
+{resolve_associativity Tadd $2 $3}
 ADD_EXPR -> SYM_MINUS MUL_EXPRS ADD_EXPR
-{resolve_associativity(Tsub, $2, $3)}
+{resolve_associativity Tsub $2 $3}
 ADD_EXPR -> {NullLeaf}
 
 
@@ -139,9 +138,9 @@ match $2 with
 |_ -> $1
 }
 
-MUL_EXPR -> SYM_ASTERISK FACTOR MUL_EXPR {resolve_associativity(Tmul, $2, $3)}
-MUL_EXPR -> SYM_DIV FACTOR MUL_EXPR {resolve_associativity(Tdiv, $2, $3)}
-MUL_EXPR -> SYM_MOD FACTOR MUL_EXPR {resolve_associativity(Tmod, $2, $3)}
+MUL_EXPR -> SYM_ASTERISK FACTOR MUL_EXPR {resolve_associativity Tmul $2 $3}
+MUL_EXPR -> SYM_DIV FACTOR MUL_EXPR {resolve_associativity Tdiv $2 $3}
+MUL_EXPR -> SYM_MOD FACTOR MUL_EXPR {resolve_associativity Tmod $2 $3}
 MUL_EXPR -> {NullLeaf}
 
 

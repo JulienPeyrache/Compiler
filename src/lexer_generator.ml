@@ -410,8 +410,9 @@ let tokenize_one (d : dfa) (w: char list) : lexer_result * char list =
             |Some(qnext)-> let funct_opt = List.assoc_opt qnext d.dfa_final and new_tok = tete::current_token in
                             match funct_opt with 
                             |None-> recognize qnext queue new_tok last_accepted
-                            |Some(t) -> let Some(tok) = t (string_of_char_list (List.rev new_tok)) in
-                                        recognize qnext queue new_tok (LRtoken(tok), queue)  
+                            |Some(t) -> (match (t (string_of_char_list (List.rev new_tok))) with 
+                                        |Some(tok) -> recognize qnext queue new_tok (LRtoken(tok), queue)
+                                        | _ -> failwith "impossible, lexer_generator tokenize_one")
   in
   recognize d.dfa_initial w [] (LRerror, w)
 
