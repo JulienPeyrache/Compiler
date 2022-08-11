@@ -4,6 +4,7 @@ open Prog
 open Utils
 
 (* Analyse de vivacité *)
+ 
 
 (* [vars_in_expr e] renvoie l'ensemble des variables qui apparaissent dans [e]. *)
 let rec vars_in_expr (e: expr) =
@@ -30,7 +31,7 @@ let live_cfg_node (node: cfg_node) (live_after: string Set.t) =
    nœud [n] dans un CFG [cfg]. [lives] est l'état courant de l'analyse,
    c'est-à-dire une table dont les clés sont des identifiants de nœuds du CFG et
    les valeurs sont les ensembles de variables vivantes avant chaque nœud. *)
-let live_after_node cfg n (lives: (int, string Set.t) Hashtbl.t) : string Set.t =
+let live_after_node cfg (n:int) (lives: (int, string Set.t) Hashtbl.t) : string Set.t =
    (* TODO *)
    match (Hashtbl.find cfg n) with 
    |(Cnop succ) -> (Hashtbl.find lives succ) 
@@ -47,10 +48,20 @@ let live_after_node cfg n (lives: (int, string Set.t) Hashtbl.t) : string Set.t 
    au moins un nœud n pour lequel l'ensemble des variables vivantes avant ce
    nœud a changé). *)
 let live_cfg_nodes cfg (lives : (int, string Set.t) Hashtbl.t) =
-   let lives = Hashtbl.create 17 in
      (* TODO *)
- lives
-
+   let rec iteration_etape (worklist : int list) visited bool = 
+   match worklist with
+   | []  -> bool
+   | tete::queue -> if (Set.mem tete visited) then iteration_etape queue visited bool
+                     else let noeud = (Hashtbl.find cfg tete) in
+                     let new_set = live_cfg_node noeud (live_after_node cfg tete lives) in
+                     let new_visited = (Set.add tete visited) in
+                     let new_worklist = queue@(Set.elements (Set.diff (succs cfg tete) visited)) in
+                     if Set.equal (new_set) (Hashtbl.find lives tete) then
+                        iteration_etape new_worklist new_visited bool
+                     else (Hashtbl.replace lives tete new_set; 
+                     iteration_etape new_worklist new_visited true)
+   in iteration_etape (List.of_enum (Hashtbl.keys cfg)) Set.empty false
    
 
 (* [live_cfg_fun f] calcule l'ensemble des variables vivantes avant chaque nœud
@@ -61,4 +72,8 @@ let live_cfg_nodes cfg (lives : (int, string Set.t) Hashtbl.t) =
 let live_cfg_fun (f: cfg_fun) : (int, string Set.t) Hashtbl.t =
   let lives = Hashtbl.create 17 in
      (* TODO *)
- lives
+   let bool = ref true in
+   while !bool do
+      bool := (live_cfg_nodes f.cfgfunbody lives)
+      done;
+   lives
