@@ -19,6 +19,7 @@ let dead_assign_elimination_fun ({ cfgfunargs; cfgfunbody; cfgentry } as f: cfg_
     Hashtbl.map (fun (n: int) (m: cfg_node) ->
         match m with
            (* TODO *)
+        | Cassign(v,e,s) -> Cnop (s)
         | _ -> m
       ) cfgfunbody in
   ({ f with cfgfunbody }, !changed )
