@@ -47,35 +47,24 @@ let empty_nfa =
 (* Concaténation de NFAs.  *)
 let cat_nfa (n1 : nfa) (n2 : nfa) : nfa =
    (* TODO *)
-  let rec parcours (etat : nfa_state) (liste : nfa_state list) (accumulateur : (char set option * nfa_state) list) : (char set option * nfa_state) list= 
-  match liste with
-  | [] -> accumulateur
-  | t::q -> parcours etat q ((None, t)::accumulateur)
-  in let step q = if List.mem q n2.nfa_states then n2.nfa_step q
-                  else if List.mem q n1.nfa_states then 
-                    if List.mem_assoc q n1.nfa_final then (parcours q n2.nfa_initial [])@(n1.nfa_step q)
-                    else n1.nfa_step q
-                  else failwith "Impossible"
-  in 
+ 
   {
     nfa_states = n1.nfa_states@n2.nfa_states;
     nfa_initial = n1.nfa_initial;
     nfa_final = n2.nfa_final;
-    nfa_step = step;
+    nfa_step = fun q -> (n1.nfa_step q)@(n2.nfa_step q)@(if List.mem_assoc q n1.nfa_final then
+                                            List.map (fun q2 -> (None, q2) ) n2.nfa_initial else []);
   }
  
 (* Alternatives de NFAs *)
 let alt_nfa n1 n2 =
    (* TODO *)
-   let step = fun q -> if List.mem q n1.nfa_states then n1.nfa_step q
-                                  else if  List.mem q n2.nfa_states then n2.nfa_step q
-                                  else failwith "Impossible"
-    in 
+   
   {
     nfa_states = n1.nfa_states@n2.nfa_states;
     nfa_initial = n1.nfa_initial@n2.nfa_initial;
     nfa_final = n1.nfa_final@n2.nfa_final;
-    nfa_step = step;
+    nfa_step = fun q -> (n1.nfa_step q)@(n2.nfa_step q);
   }
  
 
@@ -85,21 +74,13 @@ let alt_nfa n1 n2 =
 (* t est de type [string -> token option] *)
 let star_nfa n t =
    (* TODO *)
-  let rec parcours etat liste accumulateur = 
-  match liste with
-  | [] -> accumulateur
-  | t::q -> parcours etat q ((None, t)::accumulateur)
-
-  in 
-  let nfa_final_state = (max n.nfa_states)+1 in
-  let step = fun q -> if List.mem_assoc q n.nfa_final then 
-                                        let eps_transi = parcours q n.nfa_initial (n.nfa_step q) in
-                                        (None, nfa_final_state)::eps_transi
-                                    else n.nfa_step q
+  let step = fun q -> if List.mem_assoc q n.nfa_final 
+                          then (n.nfa_step q)@(List.map (fun etat_init -> (None, etat_init)) n.nfa_initial) 
+                      else n.nfa_step q
   in {
-    nfa_states = (nfa_final_state)::n.nfa_states;
-    nfa_initial = n.nfa_initial;
-    nfa_final = (nfa_final_state, t)::[];
+    nfa_states = n.nfa_states;
+    nfa_initial = List.map (fun (q, fonction) -> q) n.nfa_final;
+    nfa_final = List.map (fun (q,_) -> (q,t)) n.nfa_final;
     nfa_step = step
   }
 
@@ -314,16 +295,12 @@ let min_priority (l: token list) : token option =
 let dfa_final_states (n: nfa) (dfa_states: dfa_state list) :
   (dfa_state * (string -> token option)) list  =
    (* TODO *)
-   (*
-    let dfa_final_states_aux (table: (dfa_state, (char * dfa_state) list) Hashtbl.t) (dfa_states: dfa_state list) :
-      (dfa_state * (string -> token option)) list =
-        List.map (fun dfa_state ->
-          let transitions = Hashtbl.find_option table dfa_state in
-          let token = min_priority (List.map (fun (c,q) -> n.nfa_step c) transitions) in
-          (dfa_state, token)
-        ) dfa_states in
-    dfa_final_states_aux (build_dfa_table Hashtbl.empty n dfa_states) dfa_states
-    *) []
+  List.filter_map (fun dfa_etat ->
+    let etats_finaux_presents = (List.filter (fun (nfa_etat, _) -> Set.mem nfa_etat dfa_etat) n.nfa_final) in
+    match etats_finaux_presents with
+    | [] -> None
+    | _ -> Some(dfa_etat, fun str -> min_priority (List.filter_map (fun (q, fonction) -> fonction str) etats_finaux_presents)))
+    dfa_states
 
 (* Construction de la relation de transition du DFA. *)
 
@@ -404,15 +381,15 @@ let tokenize_one (d : dfa) (w: char list) : lexer_result * char list =
     : lexer_result * char list =
          (* TODO *)
          match w with 
-         |[] -> last_accepted
+         |[] -> if fst last_accepted = LRerror then (LRtoken SYM_EOF, []) else last_accepted
          |tete::queue -> match d.dfa_step q tete with
             |None -> last_accepted
-            |Some(qnext)-> let funct_opt = List.assoc_opt qnext d.dfa_final and new_tok = tete::current_token in
+            |Some(qnext)-> let funct_opt = List.assoc_opt qnext d.dfa_final and new_tok = current_token@[tete] in
                             match funct_opt with 
                             |None-> recognize qnext queue new_tok last_accepted
-                            |Some(t) -> (match (t (string_of_char_list (List.rev new_tok))) with 
+                            |Some(t) -> (match (t (string_of_char_list (new_tok))) with 
                                         |Some(tok) -> recognize qnext queue new_tok (LRtoken(tok), queue)
-                                        | _ -> failwith "impossible, lexer_generator tokenize_one")
+                                        | None -> recognize qnext queue new_tok (LRskip, queue))
   in
   recognize d.dfa_initial w [] (LRerror, w)
 

@@ -103,7 +103,7 @@ let list_regexp : (regexp * (string -> token option)) list =
     (keyword_regexp ">",       fun s -> Some (SYM_GT));
     (keyword_regexp "<=",      fun s -> Some (SYM_LEQ));
     (keyword_regexp ">=",      fun s -> Some (SYM_GEQ));
-    (identifier_material,        fun s -> Some (SYM_IDENTIFIER s));
+    (Cat(letter_regexp, Star(identifier_material)),        fun s -> Some (SYM_IDENTIFIER s));
     (* (char_regexp 'a',       fun s -> Some (SYM_EOF));
     (char_regexp '!',       fun s -> Some (SYM_BOOL_NOT));
     (keyword_regexp "&&",       fun s -> Some (SYM_BOOL_AND));
