@@ -79,7 +79,7 @@ LPARAMS -> {NullLeaf}
 REST_PARAMS -> SYM_COMMA IDENTIFIER REST_PARAMS 
 {
   match $3 with 
-  | NullLeaf-> $2
+  | NullLeaf-> Node(Targ,[$2])
   |_->Node(Targ, Node(Targ, [$2])::$3::[])
   }
 REST_PARAMS -> {NullLeaf}
@@ -154,19 +154,19 @@ CMP_EXPR -> SYM_LEQ ADD_EXPRS BOOL_EXPR
 {
 match $3 with
 |Node(tree_tag, tree::[]) -> Node(Tcle, [Node(tree_tag, [$2; tree])])
-|_ -> Node(Tclt, [$2])
+|_ -> Node(Tcle, [$2])
 }
 CMP_EXPR -> SYM_GT ADD_EXPRS BOOL_EXPR
 {
 match $3 with
 |Node(tree_tag, tree::[]) -> Node(Tcgt, [Node(tree_tag, [$2; tree])])
-|_ -> Node(Tclt, [$2])
+|_ -> Node(Tcgt, [$2])
 }
 CMP_EXPR -> SYM_GEQ ADD_EXPRS BOOL_EXPR
 {
 match $3 with
 |Node(tree_tag, tree::[]) -> Node(Tcge, [Node(tree_tag, [$2; tree])])
-|_ -> Node(Tclt, [$2])
+|_ -> Node(Tcge, [$2])
 }
 
 
@@ -174,13 +174,13 @@ EQ_EXPR -> SYM_EQUALITY ADD_EXPRS BOOL_EXPR
 {
 match $3 with
 |Node(tree_tag, tree::[]) -> Node(Tceq, [Node(tree_tag, [$2; tree])])
-|_ -> Node(Tclt, [$2])
+|_ -> Node(Tceq, [$2])
 }
 EQ_EXPR -> SYM_NOTEQ ADD_EXPRS BOOL_EXPR
 {
 match $3 with
 |Node(tree_tag, tree::[]) -> Node(Tne, [Node(tree_tag, [$2; tree])])
-|_ -> Node(Tclt, [$2])
+|_ -> Node(Tne, [$2])
 }
 
 FACTOR -> SYM_MINUS FACTOR {Node(Tneg, [$2])}
@@ -191,5 +191,5 @@ FACTOR -> SYM_LPARENTHESIS EXPR SYM_RPARENTHESIS {$2}
 
 IDENTIFIER -> SYM_IDENTIFIER {StringLeaf ($1)}
 
-INTEGER -> SYM_INTEGER {IntLeaf ($1)}
+INTEGER -> SYM_INTEGER {Node(Tint, [IntLeaf ($1)]}
 

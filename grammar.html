@@ -75,28 +75,28 @@ match $3 with
  <tr id='rule-33' style='border: none;'><td class='left'>(33)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_LEQ <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>
 match $3 with
 |Node(tree_tag, tree::[]) -> Node(Tcle, [Node(tree_tag, [$2; tree])])
-|_ -> Node(Tclt, [$2])
+|_ -> Node(Tcle, [$2])
 </pre></td></tr>
  <tr id='rule-34' style='border: none;'><td class='left'>(34)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_GT <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>
 match $3 with
 |Node(tree_tag, tree::[]) -> Node(Tcgt, [Node(tree_tag, [$2; tree])])
-|_ -> Node(Tclt, [$2])
+|_ -> Node(Tcgt, [$2])
 </pre></td></tr>
  <tr id='rule-35' style='border: none;'><td class='left'>(35)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_GEQ <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>
 match $3 with
 |Node(tree_tag, tree::[]) -> Node(Tcge, [Node(tree_tag, [$2; tree])])
-|_ -> Node(Tclt, [$2])
+|_ -> Node(Tcge, [$2])
 </pre></td></tr>
 
  <tr id='rule-36' style='border-top: solid 1px;'><td class='left'>(36)</td> <td class='left'> <span id='nt-EQ_EXPR'>EQ_EXPR</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_EQUALITY <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>
 match $3 with
 |Node(tree_tag, tree::[]) -> Node(Tceq, [Node(tree_tag, [$2; tree])])
-|_ -> Node(Tclt, [$2])
+|_ -> Node(Tceq, [$2])
 </pre></td></tr>
  <tr id='rule-37' style='border: none;'><td class='left'>(37)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_NOTEQ <a href='#nt-ADD_EXPRS' style='color: black;'>ADD_EXPRS</a> <a href='#nt-BOOL_EXPR' style='color: black;'>BOOL_EXPR</a></td><td class='left'><pre>
 match $3 with
 |Node(tree_tag, tree::[]) -> Node(Tne, [Node(tree_tag, [$2; tree])])
-|_ -> Node(Tclt, [$2])
+|_ -> Node(Tne, [$2])
 </pre></td></tr>
 
  <tr id='rule-38' style='border-top: solid 1px;'><td class='left'>(38)</td> <td class='left'> <span id='nt-ELSE'>ELSE</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_ELSE SYM_LBRACE <a href='#nt-LINSTRS' style='color: black;'>LINSTRS</a> SYM_RBRACE</td><td class='left'><pre>Node(Telse,[$3])</pre></td></tr>
