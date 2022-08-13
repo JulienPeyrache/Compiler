@@ -66,12 +66,12 @@ match e with
    lieu et que l'exécution doit continuer.
 
    - [st'] est l'état mis à jour. *)
-let rec eval_einstr oc (st: int state) (instruction: instr) : ((int option * int state) res) =
+let rec eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr) : ((int option * int state) res) =
  match instruction with
  |Iprint e ->
    let x = eval_eexpr st e in
    (function
-   |OK x -> OK (None, st)
+   |OK x -> (Format.fprintf oc "%d\n"x); OK (None, st)
    |Error msg -> Error msg) x 
 |Ireturn e ->
    let x = eval_eexpr st e in
