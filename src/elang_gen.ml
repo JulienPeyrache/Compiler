@@ -50,8 +50,8 @@ let rec make_eexpr_of_ast (a: tree) : expr res =
                                                 | _, Error msg -> Error msg
                                                 )
     | Node(Tneg, [e1])  -> make_eexpr_of_ast e1 >>= fun expression -> OK (Eunop(Eneg, expression))
+    | Node(Tint, [IntLeaf i]) -> OK(Eint i)
     | StringLeaf s -> OK (Evar s)
-    | IntLeaf i -> OK (Eint i)
     | CharLeaf c -> OK (Evar (String.of_list [c]))
     | _ -> Error (Printf.sprintf "Unacceptable ast in make_eexpr_of_ast %s"
                     (string_of_ast a))
@@ -64,12 +64,14 @@ let rec make_eexpr_of_ast (a: tree) : expr res =
 let rec make_einstr_of_ast (a: tree) : instr res =
   let res =
     match a with
-    | Node(Tassign, [StringLeaf s; e1]) -> make_eexpr_of_ast e1 >>= fun expression -> OK (Iassign(s,expression))
+    | Node(Tassign,[Node(Tassignvar, [StringLeaf s; e1])]) -> make_eexpr_of_ast e1 >>= fun expression -> OK (Iassign(s,expression))
     | Node(Tif, [e1; e2; e3]) -> make_eexpr_of_ast e1 >>= fun expr1 -> make_einstr_of_ast e2 >>= fun instr2 -> make_einstr_of_ast e3 >>= fun instr3 ->OK (Iif(expr1, instr2, instr3))
+    | Node(Tif, [e1; e2]) -> make_eexpr_of_ast e1 >>= fun expr1 -> make_einstr_of_ast e2 >>= fun instr2 -> OK (Iif(expr1, instr2, Iblock([])))
     | Node(Twhile, [e1; e2]) -> make_eexpr_of_ast e1 >>= fun expr1 -> make_einstr_of_ast e2 >>= fun expr2 -> OK (Iwhile(expr1, expr2))
     | Node(Treturn, [e1]) -> make_eexpr_of_ast e1 >>= fun expression -> OK (Ireturn(expression))
     | Node(Tprint, [e1]) -> make_eexpr_of_ast e1 >>= fun expression -> OK (Iprint(expression))
     | Node(Tblock, l) -> list_map_res make_einstr_of_ast l >>= fun liste -> OK (Iblock(liste))
+    | Node(Telse, l) -> list_map_res make_einstr_of_ast l >>= fun liste -> OK (Iblock(liste))
     | _ -> Error (Printf.sprintf "Unacceptable ast in make_einstr_of_ast %s"
                     (string_of_ast a))
   in
@@ -92,8 +94,8 @@ let make_fundef_of_ast (a: tree) : (string * efun) res =
      (* TODO *)
     make_einstr_of_ast fbody >>= fun fbody ->
     OK(fname, {funargs = fargs; funbody = fbody})
-
-     
+    | Node (Tfundef, [StringLeaf fname; NullLeaf; fbody]) ->  
+      make_einstr_of_ast fbody >>= fun fbody -> OK(fname, {funargs = []; funbody = fbody})
   | _ ->
     Error (Printf.sprintf "make_fundef_of_ast: Expected a Tfundef, got %s."
              (string_of_ast a))
