@@ -47,9 +47,9 @@ let live_cfg_nodes cfg (lives : (int, string Set.t) Hashtbl.t) =
    Hashtbl.fold (fun n noeud change ->
       let vars_after = live_after_node cfg n lives in 
       let vars_before = live_cfg_node noeud vars_after in
-      Hashtbl.add lives n vars_before ; 
+      Hashtbl.replace lives n vars_before ; 
       if Set.equal vars_before (Hashtbl.find_default lives n Set.empty)
-      then (true) else change) cfg false
+      then change else true) cfg false
 
 (* [live_cfg_fun f] calcule l'ensemble des variables vivantes avant chaque nœud
    du CFG en itérant [live_cfg_nodes] jusqu'à ce qu'un point fixe soit atteint.
@@ -59,7 +59,7 @@ let live_cfg_nodes cfg (lives : (int, string Set.t) Hashtbl.t) =
 let live_cfg_fun (f: cfg_fun) : (int, string Set.t) Batteries.Hashtbl.t =
   let lives = Hashtbl.create 17 in
      (* TODO *)
-   let bool = ref true in
+   let bool = ref (live_cfg_nodes f.cfgfunbody lives) in
    while !bool do
       bool := (live_cfg_nodes f.cfgfunbody lives)
       done;

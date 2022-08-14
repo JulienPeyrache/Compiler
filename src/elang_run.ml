@@ -31,7 +31,7 @@ let eval_binop (b: binop) : int -> int -> int =
 (* [eval_unop u x] évalue l'opération unaire [u] sur l'argument [x]. *)
 let eval_unop (u: unop) : int -> int =
   match u with
-  |Eneg -> fun x -> if (x=0) then 1 else 0
+  |Eneg -> fun x -> -x
 
 (* [eval_eexpr st e] évalue l'expression [e] dans l'état [st]. Renvoie une
    erreur si besoin. *)
@@ -160,7 +160,6 @@ let eval_eprog oc (ep: eprog) (memsize: int) (params: int list)
   (* ne garde que le nombre nécessaire de paramètres pour la fonction "main". *)
   let n = List.length f.funargs in
   let params = take n params in
-  List.iter2 (fun a v -> Hashtbl.replace st.env a v) f.funargs params ; 
   eval_efun oc st f "main" params >>= fun (v, st) ->
   OK v
 
