@@ -11,18 +11,18 @@ let binop_bool_to_int f x y = if f x y then 1 else 0
    et [y]. *)
 let eval_binop (b: binop) : int -> int -> int =
   match b with
-   |Eadd -> fun  x y -> x + y
-   |Esub -> fun  x y -> x - y
-   |Emul -> fun  x y -> x * y
-   |Ediv -> fun  x y -> x / y
-   |Emod -> fun  x y -> x mod y 
-   |Eceq  -> fun  x y -> if (x=y) then 1 else 0
-   |Ecne -> fun  x y -> if (x<>y) then 1 else 0
-   |Eclt  -> fun  x y -> if (x<y) then 1 else 0
-   |Ecgt  -> fun  x y -> if (x>y) then 1 else 0
-   |Ecle  -> fun  x y -> if (x<=y) then 1 else 0
-   |Ecge  -> fun  x y -> if (x>=y) then 1 else 0
-   |Exor -> fun x y -> match (x,y) with 
+   |Eadd -> (+)
+   |Esub -> (-)
+   |Emul -> ( * )
+   |Ediv -> (/)
+   |Emod -> (mod)
+   |Eceq -> binop_bool_to_int (=)
+   |Ecne -> binop_bool_to_int (<>)
+   |Eclt -> binop_bool_to_int (<)
+   |Ecgt -> binop_bool_to_int (>)
+   |Ecle -> binop_bool_to_int (<=)
+   |Ecge -> binop_bool_to_int (>=)
+   |Exor -> fun  x y -> match (x,y) with 
                         |(0,0) -> 0
                         |(0, _ ) -> 1
                         |(_, 0) -> 1
@@ -81,7 +81,7 @@ let rec eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr)
  |Iassign (s,e) ->
    let x = eval_eexpr st e in
    (match x with
-   |OK x -> Hashtbl.replace st.env s x; OK (None, st)
+   |OK x -> (Hashtbl.replace st.env s x; OK (None, st))
    |Error msg -> Error msg)
 |Iblock liste -> 
    (match liste with
@@ -160,7 +160,6 @@ let eval_eprog oc (ep: eprog) (memsize: int) (params: int list)
   (* ne garde que le nombre nécessaire de paramètres pour la fonction "main". *)
   let n = List.length f.funargs in
   let params = take n params in
-  List.iter2 (fun a v -> Hashtbl.replace st.env a v) f.funargs params ; 
   eval_efun oc st f "main" params >>= fun (v, st) ->
   OK v
 

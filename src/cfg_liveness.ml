@@ -34,7 +34,7 @@ let live_cfg_node (node: cfg_node) (live_after: string Set.t) =
 let live_after_node cfg (n:int) (lives: (int, string Set.t) Hashtbl.t) : string Set.t =
    (* TODO *)
   let ensemble_succ = succs cfg n in 
-  Set.fold (fun ens acc -> Set.union (Hashtbl.find_default lives ens acc) acc) ensemble_succ Set.empty
+  Set.fold (fun ens acc -> Set.union (Hashtbl.find_default lives ens Set.empty) acc) ensemble_succ Set.empty
    
 
 (* [live_cfg_nodes cfg lives] effectue une itération du calcul de point fixe.
@@ -48,8 +48,9 @@ let live_cfg_nodes cfg (lives : (int, string Set.t) Hashtbl.t) =
    Hashtbl.fold (fun n noeud change ->
       let vars_after = live_after_node cfg n lives in 
       let vars_before = live_cfg_node noeud vars_after in
-      Hashtbl.replace lives n vars_before ; 
-      if Set.equal vars_before (Hashtbl.find_default lives n Set.empty)
+      Hashtbl.replace lives n vars_before ;
+      let dernieres_vars = Hashtbl.find_default lives n Set.empty in
+      if Set.equal vars_before dernieres_vars
       then change else true) cfg false
    
 
