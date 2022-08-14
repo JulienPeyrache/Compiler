@@ -31,7 +31,7 @@ let eval_binop (b: binop) : int -> int -> int =
 (* [eval_unop u x] évalue l'opération unaire [u] sur l'argument [x]. *)
 let eval_unop (u: unop) : int -> int =
   match u with
-  |Eneg -> fun x -> if (x=0) then 1 else 0
+  |Eneg -> fun x -> -x
 
 (* [eval_eexpr st e] évalue l'expression [e] dans l'état [st]. Renvoie une
    erreur si besoin. *)
@@ -66,12 +66,12 @@ match e with
    lieu et que l'exécution doit continuer.
 
    - [st'] est l'état mis à jour. *)
-let rec eval_einstr oc (st: int state) (instruction: instr) : ((int option * int state) res) =
+let rec eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr) : ((int option * int state) res) =
  match instruction with
  |Iprint e ->
    let x = eval_eexpr st e in
    (function
-   |OK x -> OK (None, st)
+   |OK x -> (Format.fprintf oc "%d\n"x); OK (None, st)
    |Error msg -> Error msg) x 
 |Ireturn e ->
    let x = eval_eexpr st e in

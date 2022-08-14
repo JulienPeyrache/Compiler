@@ -28,6 +28,12 @@ axiom S
     |Node(tree_arg, tree2::rest::[]) -> resolve_associativity (Node(tree_arg, [term; tree2])) rest
     | _ -> term
 
+  let rec resolve_associativity_v2 (term : tree) (other : (tag*tree)list) : tree = 
+    match other with
+   |[] -> term
+   |(tag, tree) :: rest -> resolve_associativity_v2 (Node(tag, term::tree::[])) rest
+
+
 }
 
 
@@ -65,48 +71,36 @@ INSTR -> IDENTIFIER SYM_ASSIGN EXPR SYM_SEMICOLON {Node(Tassign, Node(Tassignvar
 ELSE -> SYM_ELSE SYM_LBRACE LINSTRS SYM_RBRACE {if ($3=NullLeaf) then [] else Node(Telse,[$3])::[]}
 ELSE -> {[]}
 
-EXPR -> ADD_EXPRS BOOL_EXPR
-  { 
-  match $2 with 
-  |Node(tree_tag, tree::[]) -> Node(tree_tag, [$1; tree])
-  |_ -> $1
-  }
+EXPR -> ADD_EXPRS BOOL_EXPR {resolve_associativity_v2 $1 $2}
 
 BOOL_EXPR -> CMP_EXPR {$1}
 BOOL_EXPR -> EQ_EXPR {$1}
-BOOL_EXPR -> {NullLeaf}
+BOOL_EXPR -> {[]}
 
 
-ADD_EXPRS -> MUL_EXPRS ADD_EXPR {resolve_associativity $1 $2}
+ADD_EXPRS -> MUL_EXPRS ADD_EXPR {resolve_associativity_v2 $1 $2}
 
-ADD_EXPR -> SYM_PLUS MUL_EXPRS ADD_EXPR {resolve_associativity $2 (Node(Tadd, [$3]))}
-ADD_EXPR -> SYM_MINUS MUL_EXPRS ADD_EXPR {resolve_associativity $2 (Node(Tsub, [$3]))}
-ADD_EXPR -> {NullLeaf}
-
-
-MUL_EXPRS -> FACTOR MUL_EXPR
-{
-  match $2 with 
-  |Node(tree_tag, tree::[]) -> Node(tree_tag, [$1; tree])
-  |_ -> $1
-}
-
-MUL_EXPR -> SYM_ASTERISK FACTOR MUL_EXPR {Node(Tmul, [resolve_associativity $2 $3])}
-MUL_EXPR -> SYM_DIV FACTOR MUL_EXPR {Node(Tdiv, [resolve_associativity $2 $3])}
-MUL_EXPR -> SYM_MOD FACTOR MUL_EXPR {Node(Tmod, [resolve_associativity $2 $3])}
-MUL_EXPR -> {NullLeaf}
+ADD_EXPR -> SYM_PLUS MUL_EXPRS ADD_EXPR {(Tadd,$2)::$3}
+ADD_EXPR -> SYM_MINUS MUL_EXPRS ADD_EXPR {(Tsub,$2)::$3}
+ADD_EXPR -> {[]}
 
 
-CMP_EXPR -> SYM_LT ADD_EXPRS {Node(Tclt, [$2])}
+MUL_EXPRS -> FACTOR MUL_EXPR{resolve_associativity_v2 $1 $2}
 
-CMP_EXPR -> SYM_LEQ ADD_EXPRS {Node(Tcle, [$2])}
-CMP_EXPR -> SYM_GT ADD_EXPRS {Node(Tcgt, [$2])}
-CMP_EXPR -> SYM_GEQ ADD_EXPRS {Node(Tcge, [$2])}
+MUL_EXPR -> SYM_ASTERISK FACTOR MUL_EXPR {(Tmul,$2)::$3}
+MUL_EXPR -> SYM_DIV FACTOR MUL_EXPR {(Tdiv,$2)::$3}
+MUL_EXPR -> SYM_MOD FACTOR MUL_EXPR {(Tmod,$2)::$3}
+MUL_EXPR -> {[]}
 
 
-EQ_EXPR -> SYM_EQUALITY ADD_EXPRS {Node(Tceq, [$2])}
+CMP_EXPR -> SYM_LT ADD_EXPRS BOOL_EXPR {(Tclt, $2)::$3}
+CMP_EXPR -> SYM_LEQ ADD_EXPRS BOOL_EXPR {(Tcle, $2)::$3}
+CMP_EXPR -> SYM_GT ADD_EXPRS BOOL_EXPR {(Tcgt, $2)::$3}
+CMP_EXPR -> SYM_GEQ ADD_EXPRS BOOL_EXPR {(Tcge, $2)::$3}
 
-EQ_EXPR -> SYM_NOTEQ ADD_EXPRS {Node(Tne, [$2])}
+
+EQ_EXPR -> SYM_EQUALITY ADD_EXPRS BOOL_EXPR {(Tceq, $2)::$3}
+EQ_EXPR -> SYM_NOTEQ ADD_EXPRS BOOL_EXPR{(Tne, $2)::$3}
 
 FACTOR -> SYM_MINUS FACTOR {Node(Tneg, [$2])}
 FACTOR -> IDENTIFIER {$1}
