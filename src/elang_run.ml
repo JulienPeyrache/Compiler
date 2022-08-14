@@ -160,7 +160,8 @@ let eval_eprog oc (ep: eprog) (memsize: int) (params: int list)
   (* ne garde que le nombre nécessaire de paramètres pour la fonction "main". *)
   let n = List.length f.funargs in
   let params = take n params in
+  (List.iter2 (fun a v -> Hashtbl.replace st.env a v) f.funargs params ;
   eval_efun oc st f "main" params >>= fun (v, st) ->
-  OK v
+  OK v)
 
 
