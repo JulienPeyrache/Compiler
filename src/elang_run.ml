@@ -11,18 +11,18 @@ let binop_bool_to_int f x y = if f x y then 1 else 0
    et [y]. *)
 let eval_binop (b: binop) : int -> int -> int =
   match b with
-   |Eadd -> fun  x y -> x + y
-   |Esub -> fun  x y -> x - y
-   |Emul -> fun  x y -> x * y
-   |Ediv -> fun  x y -> x / y
-   |Emod -> fun  x y -> x mod y 
-   |Eceq  -> fun  x y -> if (x=y) then 1 else 0
-   |Ecne -> fun  x y -> if (x<>y) then 1 else 0
-   |Eclt  -> fun  x y -> if (x<y) then 1 else 0
-   |Ecgt  -> fun  x y -> if (x>y) then 1 else 0
-   |Ecle  -> fun  x y -> if (x<=y) then 1 else 0
-   |Ecge  -> fun  x y -> if (x>=y) then 1 else 0
-   |Exor -> fun x y -> match (x,y) with 
+   |Eadd -> ( + )
+   |Esub -> ( - ) 
+   |Emul -> ( * )
+   |Ediv -> ( / )
+   |Emod -> (mod)
+   |Eceq -> binop_bool_to_int (=)
+   |Ecne -> binop_bool_to_int (<>)
+   |Eclt -> binop_bool_to_int (<)
+   |Ecgt -> binop_bool_to_int (>)
+   |Ecle -> binop_bool_to_int (<=)
+   |Ecge -> binop_bool_to_int (>=)
+   |Exor -> fun  x y -> match (x,y) with 
                         |(0,0) -> 0
                         |(0, _ ) -> 1
                         |(_, 0) -> 1
@@ -50,7 +50,7 @@ match e with
   |OK x -> OK (eval_unop u x)
   |Error s -> Error s)
 |Eint n -> OK n
-|Evar(s) -> match Hashtbl.find_option st.env s with
+|Evar(s) -> match Batteries.Hashtbl.find_option st.env s with
   |Some x -> OK x
   |None -> Error ("Variable non définie : "^s)
 
@@ -71,7 +71,7 @@ let rec eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr)
  |Iprint e ->
    let x = eval_eexpr st e in
    (function
-   |OK x -> (Format.fprintf oc "%d\n"x); OK (None, st)
+   |OK x -> (Format.fprintf oc "%d\n" x; OK (None, st))
    |Error msg -> Error msg) x 
 |Ireturn e ->
    let x = eval_eexpr st e in
@@ -81,7 +81,7 @@ let rec eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr)
  |Iassign (s,e) ->
    let x = eval_eexpr st e in
    (match x with
-   |OK x -> Hashtbl.replace st.env s x; OK (None, st)
+   |OK x -> (Batteries.Hashtbl.replace st.env s x; OK (None, st))
    |Error msg -> Error msg)
 |Iblock liste -> 
    (match liste with
@@ -123,16 +123,16 @@ let eval_efun oc (st: int state) ({ funargs; funbody}: efun)
      variables de l'appelant. Donc, on sauvegarde l'environnement de l'appelant
      dans [env_save], on appelle la fonction dans un environnement propre (Avec
      seulement ses arguments), puis on restore l'environnement de l'appelant. *)
-  let env_save = Hashtbl.copy st.env in
-  let env = Hashtbl.create 17 in
-  match List.iter2 (fun a v -> Hashtbl.replace env a v) funargs vargs with
+  let env_save = Batteries.Hashtbl.copy st.env in
+  let env = Batteries.Hashtbl.create 17 in
+  match Batteries.List.iter2 (fun a v -> Batteries.Hashtbl.replace env a v) funargs vargs with
   | () ->
     eval_einstr oc { st with env } funbody >>= fun (v, st') ->
     OK (v, { st' with env = env_save })
   | exception Invalid_argument _ ->
     Error (Format.sprintf
              "E: Called function %s with %d arguments, expected %d.\n"
-             fname (List.length vargs) (List.length funargs)
+             fname (Batteries.List.length vargs) (Batteries.List.length funargs)
           )
 
 (* [eval_eprog oc ep memsize params] évalue un programme complet [ep], avec les
@@ -158,10 +158,9 @@ let eval_eprog oc (ep: eprog) (memsize: int) (params: int list)
   let st = init_state memsize in
   find_function ep "main" >>= fun f ->
   (* ne garde que le nombre nécessaire de paramètres pour la fonction "main". *)
-  let n = List.length f.funargs in
+  let n = Batteries.List.length f.funargs in
   let params = take n params in
-  (List.iter2 (fun a v -> Hashtbl.replace st.env a v) f.funargs params ;
   eval_efun oc st f "main" params >>= fun (v, st) ->
-  OK v)
+  OK v
 
 

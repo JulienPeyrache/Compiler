@@ -30,8 +30,8 @@ axiom S
 
   let rec resolve_associativity_v2 (term : tree) (other : (tag*tree)list) : tree = 
     match other with
-    |[] -> term
-    |(tag, tree) :: rest -> resolve_associativity_v2 (Node(tag, term::tree::[])) rest
+   |[] -> term
+   |(tag, tree) :: rest -> resolve_associativity_v2 (Node(tag, term::tree::[])) rest
 
 }
 
@@ -77,14 +77,15 @@ BOOL_EXPR -> EQ_EXPR {$1}
 BOOL_EXPR -> {[]}
 
 
-ADD_EXPRS -> MUL_EXPRS ADD_EXPR {resolve_associativity $1 $2}
+ADD_EXPRS -> MUL_EXPRS ADD_EXPR {resolve_associativity_v2 $1 $2}
 
-ADD_EXPR -> SYM_PLUS MUL_EXPRS ADD_EXPR {resolve_associativity $2 (Node(Tadd, [$3]))}
-ADD_EXPR -> SYM_MINUS MUL_EXPRS ADD_EXPR {resolve_associativity $2 (Node(Tsub, [$3]))}
-ADD_EXPR -> {NullLeaf}
+ADD_EXPR -> SYM_PLUS MUL_EXPRS ADD_EXPR {(Tadd,$2)::$3}
+ADD_EXPR -> SYM_MINUS MUL_EXPRS ADD_EXPR {(Tsub,$2)::$3}
+ADD_EXPR -> {[]}
 
 
-MUL_EXPRS -> FACTOR MUL_EXPR {resolve_associativity_v2 $1 $2}
+
+MUL_EXPRS -> FACTOR MUL_EXPR{resolve_associativity_v2 $1 $2}
 
 MUL_EXPR -> SYM_ASTERISK FACTOR MUL_EXPR {(Tmul,$2)::$3}
 MUL_EXPR -> SYM_DIV FACTOR MUL_EXPR {(Tdiv,$2)::$3}

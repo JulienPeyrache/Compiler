@@ -34,7 +34,7 @@ let live_cfg_node (node: cfg_node) (live_after: string Set.t) =
 let live_after_node cfg (n:int) (lives: (int, string Set.t) Hashtbl.t) : string Set.t =
    (* TODO *)
   let ensemble_succ = succs cfg n in 
-  Set.fold (fun ens acc -> Set.union (Hashtbl.find_default lives ens acc) acc) ensemble_succ Set.empty
+  Set.fold (fun ens acc -> Set.union (Hashtbl.find_default lives ens Set.empty) acc) ensemble_succ Set.empty
 
 (* [live_cfg_nodes cfg lives] effectue une itération du calcul de point fixe.
 
@@ -42,34 +42,20 @@ let live_after_node cfg (n:int) (lives: (int, string Set.t) Hashtbl.t) : string 
    qui indique si le calcul a progressé durant cette itération (i.e. s'il existe
    au moins un nœud n pour lequel l'ensemble des variables vivantes avant ce
    nœud a changé). *)
-let live_cfg_nodes cfg (lives : (int, string Set.t) Hashtbl.t) =
+let live_cfg_nodes cfg (lives : (int, string Set.t) Hashtbl.t)  : bool =
      (* TODO *)
-     (* Hashtbl.fold (fun n noeud change ->
+
+   Hashtbl.fold (fun (n : int) (noeud : cfg_node) (change : bool) : bool ->
       let vars_after = live_after_node cfg n lives in 
       let vars_before = live_cfg_node noeud vars_after in
-      let nouveaux_before = (Hashtbl.find_default lives n Set.empty) in
-      Hashtbl.replace lives n vars_before ; 
-      if Set.equal vars_before nouveaux_before then change else true) 
-      cfg false
-
-       let rec iteration_etape (worklist : int list) visited bool = 
-       match worklist with
-      | []  -> bool
-      | tete::queue -> if (Set.mem tete visited) then iteration_etape queue visited bool
-              else let noeud = (Hashtbl.find cfg tete) in
-                   let new_set = live_cfg_node noeud (live_after_node cfg tete lives) in
-                   let new_visited = (Set.add tete visited) in
-                   let new_worklist = queue@(Set.elements (Set.diff (succs cfg tete) visited)) in
-                   if Set.equal (new_set) (Hashtbl.find lives tete) then
-                       iteration_etape new_worklist new_visited bool
-                   else (Hashtbl.replace lives tete new_set; 
-                         iteration_etape new_worklist new_visited true)
-   in iteration_etape (List.of_enum (Hashtbl.keys cfg)) Set.empty false *) 
+      Hashtbl.replace lives n vars_before ;
+      let dernieres_vars = Hashtbl.find_default lives n Set.empty in
+      if Set.equal vars_before dernieres_vars
+      then change else true) cfg false
 
 (* [live_cfg_fun f] calcule l'ensemble des variables vivantes avant chaque nœud
    du CFG en itérant [live_cfg_nodes] jusqu'à ce qu'un point fixe soit atteint.
    *)
-   false
 
 
 let live_cfg_fun (f: cfg_fun) : (int, string Set.t) Batteries.Hashtbl.t =

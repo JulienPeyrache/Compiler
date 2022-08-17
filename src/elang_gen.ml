@@ -94,7 +94,7 @@ let make_fundef_of_ast (a: tree) : (string * efun) res =
      (* TODO *)
     make_einstr_of_ast fbody >>= fun fbody ->
     OK(fname, {funargs = fargs; funbody = fbody})
-    | Node (Tfundef, [StringLeaf fname; NullLeaf; fbody]) ->  
+  | Node (Tfundef, [StringLeaf fname; NullLeaf; fbody]) ->  
       make_einstr_of_ast fbody >>= fun fbody -> OK(fname, {funargs = []; funbody = fbody})
   | _ ->
     Error (Printf.sprintf "make_fundef_of_ast: Expected a Tfundef, got %s."
