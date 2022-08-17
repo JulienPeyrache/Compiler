@@ -22,12 +22,12 @@ let sort_blocks (nodes: (int, rtl_instr list) Hashtbl.t) entry =
   let rec add_block order n =
    (* TODO *)
    if List.mem n order then order else
-   let rtl_liste = Hashtbl.find_option nodes n in
-   match rtl_liste with 
-   |Some(liste) -> let successeurs = succs_of_rtl_instrs liste in
-   List.fold_left (fun ordre instruct -> add_block ordre instruct) (order@[n]) successeurs
-  |None -> List.of_enum (Hashtbl.keys nodes) in
-  add_block [] entry
+   let rtl_liste = Hashtbl.find nodes n in
+  let successeurs = succs_of_rtl_instrs rtl_liste in
+  List.fold_left (fun ordre instruct -> add_block ordre instruct) (order@[n]) successeurs
+   in 
+   try add_block [] entry with 
+   | Not_found -> List.of_enum (Hashtbl.keys nodes)
 
 
   (* Explication de la fonction sort_blocks :
@@ -54,7 +54,7 @@ let rec remove_useless_jumps (l: rtl_instr list) =
 (* Remove labels that are never jumped to. *)
 let remove_useless_labels (l: rtl_instr list) =
    (* TODO *)
-   let labels_avec_jump = List.fold (fun ensemble rtlinstr -> match rtlinstr with |Rjmp(label) -> Set.add label ensemble |_ -> ensemble)
+   let labels_avec_jump = List.fold (fun ensemble rtlinstr -> match rtlinstr with |Rjmp(label) |Rbranch(_,_,_,label) -> Set.add label ensemble  |_ -> ensemble)
                           Set.empty l in
     let rec parcours liste = match liste with
     |Rlabel(label)::q -> if Set.mem label labels_avec_jump then Rlabel(label)::(parcours q) else parcours q
