@@ -87,7 +87,7 @@ let rec eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr)
    (match liste with
    |[] -> OK (None, st)
    |ins::suite ->
-     eval_einstr oc st instruction >>= fun (ret, st') ->
+     eval_einstr oc st ins >>= fun (ret, st') ->
      (match ret with
      |Some x -> OK(Some x, st')
      |None -> eval_einstr oc st' (Iblock(suite))
