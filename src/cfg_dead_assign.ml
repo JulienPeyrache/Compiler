@@ -29,7 +29,6 @@ let dead_assign_elimination_fun ({ cfgfunargs; cfgfunbody; cfgentry } as f: cfg_
    notamment sur le fichier de test [basic/useless_assigns.e]. *)
 let rec iter_dead_assign_elimination_fun f =
   let f, c = dead_assign_elimination_fun f in
-  let fonction = ref f and booleen = ref c in
    (* TODO *)
    if c then iter_dead_assign_elimination_fun f else f
 
