@@ -52,7 +52,7 @@ let rec rtl_instrs_of_cfg_expr (next_reg, var2reg) (e: expr) =
    |Ebinop(b,expr1, expr2) -> let (r1,l1,next_reg1,var2reg1) = rtl_instrs_of_cfg_expr (next_reg ,var2reg)  expr1 in
                               let (r2,l2,next_reg2,var2reg2) = rtl_instrs_of_cfg_expr (next_reg1,var2reg1) expr2 in
                               (next_reg2,l1@l2@[Rbinop(b,next_reg2, r1, r2)],next_reg2+1,var2reg2)
-
+   |Ecall(str,expr_list) -> (* TO COMPLETE*) failwith "à compléter : rtl_instrs_of_cfg_expr Ecall"
 let is_cmp_op =
   function Eclt -> Some Rclt
          | Ecle -> Some Rcle
