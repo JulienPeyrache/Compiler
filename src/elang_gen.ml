@@ -51,6 +51,7 @@ let rec make_eexpr_of_ast (a: tree) : expr res =
                                                 )
     | Node(Tneg, [e1])  -> make_eexpr_of_ast e1 >>= fun expression -> OK (Eunop(Eneg, expression))
     | Node(Tint, [IntLeaf i]) -> OK(Eint i)
+    | Node(Tcall, [StringLeaf fun_name;Node(Targs, argslist)]) -> list_map_res make_eexpr_of_ast argslist >>= fun args -> OK(Ecall(fun_name, args))
     | StringLeaf s -> OK (Evar s)
     | CharLeaf c -> OK (Evar (String.of_list [c]))
     | _ -> Error (Printf.sprintf "Unacceptable ast in make_eexpr_of_ast %s"
@@ -72,6 +73,7 @@ let rec make_einstr_of_ast (a: tree) : instr res =
     | Node(Tprint, [e1]) -> make_eexpr_of_ast e1 >>= fun expression -> OK (Iprint(expression))
     | Node(Tblock, l) -> list_map_res make_einstr_of_ast l >>= fun liste -> OK (Iblock(liste))
     | Node(Telse, l) -> list_map_res make_einstr_of_ast l >>= fun liste -> OK (Iblock(liste))
+    | Node(Tcall, [StringLeaf fun_name;Node(Targs, argslist)]) -> list_map_res make_eexpr_of_ast argslist >>= fun args -> OK(Icall(fun_name, args))
     | _ -> Error (Printf.sprintf "Unacceptable ast in make_einstr_of_ast %s"
                     (string_of_ast a))
   in

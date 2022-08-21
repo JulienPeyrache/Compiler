@@ -35,27 +35,31 @@ let eval_unop (u: unop) : int -> int =
 
 (* [eval_eexpr st e] évalue l'expression [e] dans l'état [st]. Renvoie une
    erreur si besoin. *)
-let rec eval_eexpr st (e : expr) : int res =
+let rec eval_eexpr (oc : Format.formatter) (st : int state) (e : expr) (ep: eprog) : int res =
 match e with
 |Ebinop(b,e1,e2) -> 
-  let x = eval_eexpr st e1 in
-  let y = eval_eexpr st e2 in
+  let x = eval_eexpr oc st e1 ep in
+  let y = eval_eexpr oc st e2 ep in
   (match x,y with
   |OK x,OK y -> OK (eval_binop b x y)
   |Error s, _ -> Error s
   |_, Error s -> Error s)
 |Eunop(u,e) -> 
-  let x = eval_eexpr st e in
+  let x = eval_eexpr oc st e ep in
   (match x with
   |OK x -> OK (eval_unop u x)
   |Error s -> Error s)
 |Eint n -> OK n
-|Evar(s) -> match Batteries.Hashtbl.find_option st.env s with
+|Evar(s) -> (match Batteries.Hashtbl.find_option st.env s with
   |Some x -> OK x
-  |None -> Error ("Variable non définie : "^s)
+  |None -> Error ("Variable non définie : "^s))
+|Ecall(fname,el) -> let retour = (find_function ep fname >>= fun fonction -> eval_efun oc st fonction fname el ep)
+   in(match retour with
+      |OK(Some(ret), st') -> OK(ret)
+      |OK(None, st) -> Error("Fonction "^fname^" ne renvoie rien")
+      |Error s -> Error s)
 
 (* [eval_einstr oc st ins] évalue l'instrution [ins] en partant de l'état [st].
-
    Le paramètre [oc] est un "output channel", dans lequel la fonction "print"
    écrit sa sortie, au moyen de l'instruction [Format.fprintf].
 
@@ -66,20 +70,20 @@ match e with
    lieu et que l'exécution doit continuer.
 
    - [st'] est l'état mis à jour. *)
-let rec eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr) : ((int option * int state) res) =
+and eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr) (ep : eprog): ((int option * int state) res) =
  match instruction with
  |Iprint e ->
-   let x = eval_eexpr st e in
+   let x = eval_eexpr oc st e ep in
    (function
    |OK x -> (Format.fprintf oc "%d\n" x; OK (None, st))
    |Error msg -> Error msg) x 
 |Ireturn e ->
-   let x = eval_eexpr st e in
+   let x = eval_eexpr oc st e ep in
    (function
    |OK x -> OK (Some x, st)
    |Error msg -> Error msg) x
  |Iassign (s,e) ->
-   let x = eval_eexpr st e in
+   let x = eval_eexpr oc st e ep in
    (match x with
    |OK x -> (Batteries.Hashtbl.replace st.env s x; OK (None, st))
    |Error msg -> Error msg)
@@ -87,27 +91,27 @@ let rec eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr)
    (match liste with
    |[] -> OK (None, st)
    |ins::suite ->
-     eval_einstr oc st ins >>= fun (ret, st') ->
+     eval_einstr oc st ins ep >>= fun (ret, st') ->
      (match ret with
      |Some x -> OK(Some x, st')
-     |None -> eval_einstr oc st' (Iblock(suite))
+     |None -> eval_einstr oc st' (Iblock(suite)) ep 
      )
    )
 |Iif(e,i1,i2) ->
-   let x = eval_eexpr st e in
+   let x = eval_eexpr oc st e ep in
    (match x with
-   |OK x -> if x=0 then eval_einstr oc st i2 else eval_einstr oc st i1
+   |OK x -> if x=0 then eval_einstr oc st i2 ep else eval_einstr oc st i1 ep 
    |Error msg -> Error msg)
 |Iwhile(e,i) ->
-   let x = eval_eexpr st e in
+   let x = eval_eexpr oc st e ep in
    (match x with
    |Error msg -> Error msg
    |OK x -> if x=0 then OK(None, st) 
-            else eval_einstr oc st i >>= fun (ret, st') ->
+            else eval_einstr oc st i ep >>= fun (ret, st') ->
                (match ret with
                   |Some _ -> OK (ret, st')
-                  |None -> eval_einstr oc st' instruction)
-   )
+                  |None -> eval_einstr oc st' instruction ep ))
+|Icall(fname,el) -> find_function ep fname >>= fun fonction -> eval_efun oc st fonction fname el ep
 
 
 (* [eval_efun oc st f fname vargs] évalue la fonction [f] (dont le nom est
@@ -115,8 +119,8 @@ let rec eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr)
 
    Cette fonction renvoie un couple (ret, st') avec la même signification que
    pour [eval_einstr]. *)
-let eval_efun oc (st: int state) ({ funargs; funbody}: efun)
-    (fname: string) (vargs: int list)
+and eval_efun (oc : Format.formatter) (st: int state) ({ funargs; funbody}: efun)
+    (fname: string) (vargs: expr list) (ep : eprog)
   : (int option * int state) res =
   (* L'environnement d'une fonction (mapping des variables locales vers leurs
      valeurs) est local et un appel de fonction ne devrait pas modifier les
@@ -125,9 +129,11 @@ let eval_efun oc (st: int state) ({ funargs; funbody}: efun)
      seulement ses arguments), puis on restore l'environnement de l'appelant. *)
   let env_save = Batteries.Hashtbl.copy st.env in
   let env = Batteries.Hashtbl.create 17 in
-  match Batteries.List.iter2 (fun a v -> Batteries.Hashtbl.replace env a v) funargs vargs with
+  let vargs_int = list_map_res (fun e -> eval_eexpr oc st e ep) vargs in
+  vargs_int >>= fun vargs_int ->
+  match Batteries.List.iter2 (fun a v -> Batteries.Hashtbl.replace env a v) funargs vargs_int with
   | () ->
-    eval_einstr oc { st with env } funbody >>= fun (v, st') ->
+    eval_einstr oc { st with env } funbody ep >>= fun (v, st') ->
     OK (v, { st' with env = env_save })
   | exception Invalid_argument _ ->
     Error (Format.sprintf
@@ -160,7 +166,7 @@ let eval_eprog oc (ep: eprog) (memsize: int) (params: int list)
   (* ne garde que le nombre nécessaire de paramètres pour la fonction "main". *)
   let n = Batteries.List.length f.funargs in
   let params = take n params in
-  eval_efun oc st f "main" params >>= fun (v, st) ->
+  eval_efun oc st f "main" (List.map (fun x -> Eint x) params) ep >>= fun (v, st) ->
   OK v
 
 

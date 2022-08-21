@@ -221,6 +221,9 @@ let written_rtl_regs_instr (i: rtl_instr) =
   | Rlabel _
   | Rbranch (_, _, _, _)
   | Rjmp _ -> Set.empty
+  | Rcall (ord, _ , _) -> match ord with
+    | None -> Set.empty
+    | Some rd -> Set.singleton rd
 
 let read_rtl_regs_instr (i: rtl_instr) =
   match i with
@@ -235,6 +238,8 @@ let read_rtl_regs_instr (i: rtl_instr) =
   | Rlabel _
   | Rconst (_, _)
   | Rjmp _ -> Set.empty
+
+  |Rcall(_, _, rlist) -> Set.of_list rlist
 
 let read_rtl_regs (l: rtl_instr list) =
   List.fold_left (fun acc i -> Set.union acc (read_rtl_regs_instr i))
@@ -323,6 +328,7 @@ let ltl_instrs_of_linear_instr fname live_out allocation
     load_loc reg_tmp1 allocation r >>= fun (l,r) ->
     OK (l @ [LMov (reg_ret, r) ; LJmp epilogue_label])
   | Rlabel l -> OK [LLabel (Format.sprintf "%s_%d" fname l)]
+  |_ -> failwith "Not implemented : ltl_gen read_trl_regs"
   in
   res >>= fun l ->
   OK (LComment (Format.asprintf "#<span style=\"background: pink;\"><b>Linear instr</b>: %a #</span>" (Rtl_print.dump_rtl_instr fname (None, None)) ins)::l)

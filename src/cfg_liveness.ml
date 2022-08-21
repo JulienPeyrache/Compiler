@@ -14,6 +14,7 @@ let rec vars_in_expr (e: expr) =
    |Eint(i) -> Set.empty
    |Eunop(u,exp) -> vars_in_expr exp
    |Ebinop(b,e1,e2) -> Set.union (vars_in_expr e1) (vars_in_expr e2)
+   |Ecall(funname, args) -> List.fold (fun acc e -> Set.union (vars_in_expr e) acc) Set.empty args
 
 (* [live_cfg_node node live_after] renvoie l'ensemble des variables vivantes
    avant un nœud [node], étant donné l'ensemble [live_after] des variables
@@ -26,6 +27,7 @@ let live_cfg_node (node: cfg_node) (live_after: string Set.t) =
    | Cprint(e,i) -> Set.union (vars_in_expr e) live_after
    | Ccmp(e, i1, i2) -> Set.union (vars_in_expr e) live_after
    | Cnop(i) -> live_after
+   | Ccall(funname, args, i) -> Set.union (List.fold (fun acc e -> Set.union (vars_in_expr e) acc) Set.empty args) live_after
 
 (* [live_after_node cfg n] renvoie l'ensemble des variables vivantes après le
    nœud [n] dans un CFG [cfg]. [lives] est l'état courant de l'analyse,
