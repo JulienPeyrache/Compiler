@@ -37,7 +37,7 @@
  <tr id='rule-22' style='border-top: solid 1px;'><td class='left'>(22)</td> <td class='left'> <span id='nt-ID_OR_CALL'>ID_OR_CALL</span> </td class='left'> <td class='left'> -> </td> <td class='left'> &epsilon;</td><td class='left'><pre>fun x -> x</pre></td></tr>
  <tr id='rule-23' style='border: none;'><td class='left'>(23)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-FUNCALL' style='color: black;'>FUNCALL</a></td><td class='left'><pre>$1</pre></td></tr>
 
- <tr id='rule-24' style='border-top: solid 1px;'><td class='left'>(24)</td> <td class='left'> <span id='nt-FUNCALL'>FUNCALL</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_LPARENTHESIS <a href='#nt-CALLPARAMS' style='color: black;'>CALLPARAMS</a> SYM_RPARENTHESIS SYM_SEMICOLON</td><td class='left'><pre>fun x -> Node(Tcall, x::[$2])</pre></td></tr>
+ <tr id='rule-24' style='border-top: solid 1px;'><td class='left'>(24)</td> <td class='left'> <span id='nt-FUNCALL'>FUNCALL</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_LPARENTHESIS <a href='#nt-CALLPARAMS' style='color: black;'>CALLPARAMS</a> SYM_RPARENTHESIS</td><td class='left'><pre>fun x -> Node(Tcall, x::[$2])</pre></td></tr>
 
  <tr id='rule-25' style='border-top: solid 1px;'><td class='left'>(25)</td> <td class='left'> <span id='nt-CALLPARAMS'>CALLPARAMS</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-EXPR' style='color: black;'>EXPR</a> <a href='#nt-REST_CALL_PARAMS' style='color: black;'>REST_CALL_PARAMS</a></td><td class='left'><pre> Node(Targs, $1::$2)</pre></td></tr>
  <tr id='rule-26' style='border: none;'><td class='left'>(26)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'> &epsilon;</td><td class='left'><pre>NullLeaf</pre></td></tr>
@@ -72,7 +72,7 @@
  <tr id='rule-47' style='border: none;'><td class='left'>(47)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'> &epsilon;</td><td class='left'><pre>[]</pre></td></tr>
 
  <tr id='rule-48' style='border-top: solid 1px;'><td class='left'>(48)</td> <td class='left'> <span id='nt-ASSIGN_OR_CALL'>ASSIGN_OR_CALL</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  SYM_ASSIGN <a href='#nt-EXPR' style='color: black;'>EXPR</a> SYM_SEMICOLON</td><td class='left'><pre>fun x -> Node(Tassign, Node(Tassignvar,[x; $2])::[])</pre></td></tr>
- <tr id='rule-49' style='border: none;'><td class='left'>(49)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-FUNCALL' style='color: black;'>FUNCALL</a></td><td class='left'><pre>$1</pre></td></tr>
+ <tr id='rule-49' style='border: none;'><td class='left'>(49)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-FUNCALL' style='color: black;'>FUNCALL</a> SYM_SEMICOLON</td><td class='left'><pre>$1</pre></td></tr>
 
  <tr id='rule-50' style='border-top: solid 1px;'><td class='left'>(50)</td> <td class='left'> <span id='nt-INSTRS'>INSTRS</span> </td class='left'> <td class='left'> -> </td> <td class='left'>  <a href='#nt-INSTR' style='color: black;'>INSTR</a> <a href='#nt-INSTRS' style='color: black;'>INSTRS</a></td><td class='left'><pre>$1::$2</pre></td></tr>
  <tr id='rule-51' style='border: none;'><td class='left'>(51)</td> <td class='left'>  </td class='left'> <td class='left'> -> </td> <td class='left'> &epsilon;</td><td class='left'><pre>[]</pre></td></tr>
@@ -151,7 +151,7 @@
 <tr><td> MUL_EXPRS </td><td>  SYM_COMMA SYM_EQUALITY SYM_GEQ SYM_GT SYM_LEQ SYM_LT SYM_MINUS SYM_NOTEQ SYM_PLUS SYM_RPARENTHESIS SYM_SEMICOLON</td></tr> 
 <tr><td> FACTOR </td><td>  SYM_ASTERISK SYM_COMMA SYM_DIV SYM_EQUALITY SYM_GEQ SYM_GT SYM_LEQ SYM_LT SYM_MINUS SYM_MOD SYM_NOTEQ SYM_PLUS SYM_RPARENTHESIS SYM_SEMICOLON</td></tr> 
 <tr><td> ID_OR_CALL </td><td>  SYM_ASTERISK SYM_COMMA SYM_DIV SYM_EQUALITY SYM_GEQ SYM_GT SYM_LEQ SYM_LT SYM_MINUS SYM_MOD SYM_NOTEQ SYM_PLUS SYM_RPARENTHESIS SYM_SEMICOLON</td></tr> 
-<tr><td> FUNCALL </td><td>  SYM_ASTERISK SYM_COMMA SYM_DIV SYM_EQUALITY SYM_GEQ SYM_GT SYM_IDENTIFIER SYM_IF SYM_LEQ SYM_LT SYM_MINUS SYM_MOD SYM_NOTEQ SYM_PLUS SYM_PRINT SYM_RBRACE SYM_RETURN SYM_RPARENTHESIS SYM_SEMICOLON SYM_WHILE</td></tr> 
+<tr><td> FUNCALL </td><td>  SYM_ASTERISK SYM_COMMA SYM_DIV SYM_EQUALITY SYM_GEQ SYM_GT SYM_LEQ SYM_LT SYM_MINUS SYM_MOD SYM_NOTEQ SYM_PLUS SYM_RPARENTHESIS SYM_SEMICOLON</td></tr> 
 <tr><td> CALLPARAMS </td><td>  SYM_RPARENTHESIS</td></tr> 
 <tr><td> REST_CALL_PARAMS </td><td>  SYM_RPARENTHESIS</td></tr> 
 <tr><td> INTEGER </td><td>  SYM_ASTERISK SYM_COMMA SYM_DIV SYM_EQUALITY SYM_GEQ SYM_GT SYM_LEQ SYM_LT SYM_MINUS SYM_MOD SYM_NOTEQ SYM_PLUS SYM_RPARENTHESIS SYM_SEMICOLON</td></tr> 

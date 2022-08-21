@@ -28,7 +28,7 @@ let rec eval_cfgexpr (oc : Format.formatter) st (e: expr) (cp : cprog): int res 
     let n = List.length f.cfgfunargs in
     let params = take n args in
     list_map_res (fun expr -> eval_cfgexpr oc st expr cp) params >>= 
-    fun params -> eval_cfgfun oc st funname f params cp >>= fun (v, st) -> OK(v)
+    fun params -> eval_cfgfun oc st funname f params cp >>= fun (v_opt, st) -> match v_opt with |None -> Error "Funcall but no return" |Some(v) -> OK(v)
    
 
 and eval_cfginstr (oc : Format.formatter) (st : int state) ht (n: int) (cp : cprog): (int * int state) res =
@@ -64,7 +64,7 @@ and eval_cfgfun oc st cfgfunname { cfgfunargs;
   let st' = { st with env = Hashtbl.create 17 } in
   match List.iter2 (fun a v -> Hashtbl.replace st'.env a v) cfgfunargs vargs with
   | () -> eval_cfginstr oc st' cfgfunbody cfgentry cp >>= fun (v, st') ->
-    OK (v, {st' with env = st.env})
+    OK (Some(v), {st' with env = st.env})
   | exception Invalid_argument _ ->
     Error (Format.sprintf "CFG: Called function %s with %d arguments, expected %d.\n"
              cfgfunname (List.length vargs) (List.length cfgfunargs)
