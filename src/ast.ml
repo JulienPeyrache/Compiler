@@ -24,13 +24,13 @@ open BatPrintf
 *)
 
 type tag = Tassign | Tif | Twhile | Tblock | Treturn | Tprint |Telse
-         | Tint
+         | Tint |Tchar | Tvoid
          | Tadd | Tmul | Tdiv | Tmod | Txor | Tsub
          | Tclt | Tcgt | Tcle | Tcge | Tceq | Tne
          | Tneg
          | Tlistglobdef
-         | Tfundef | Tfunname | Tfunargs | Tfunbody |Tcall |Targs
-         | Tassignvar
+         | Tfundef | Tfun |Tfuntype | Tfunname | Tfunargs | Tfunbody |Tcall |Targs
+         | Tassignvar |Tvar |Tvartype |Tdecl
          | Targ 
 
 type tree = | Node of tag * tree list
@@ -38,6 +38,7 @@ type tree = | Node of tag * tree list
             | IntLeaf of int
             | NullLeaf
             | CharLeaf of char
+            | TypeLeaf of Prog.typ
 
 let string_of_stringleaf = function
   | StringLeaf s -> s
@@ -77,6 +78,13 @@ let string_of_tag = function
   | Targ -> "Targ"
   | Tcall -> "Tcall"
   | Targs -> "Targs"
+  | Tchar -> "Tchar"
+  | Tvoid -> "Tvoid"
+  | Tfun -> "Tfun"
+  | Tfuntype -> "Tfuntype"
+  | Tvartype -> "Tvartype"
+  | Tvar -> "Tvar"
+  | Tdecl -> "Tdecl"
 
 
 
@@ -105,6 +113,8 @@ let rec draw_ast a next =
     (next, next+1, [         Format.sprintf "n%d [label=\"null\"]\n" next])
   | CharLeaf i ->
     (next, next+1, [         Format.sprintf "n%d [label=\"%c\"]\n" next i])
+  | TypeLeaf t ->
+    (next, next+1, [         Format.sprintf "n%d [label=\"%s\"]\n" next (Prog.string_of_typ t)])
 
 let draw_ast_tree oc ast =
   let (_, _, s) = draw_ast ast 1 in
@@ -120,3 +130,4 @@ let rec string_of_ast a =
   | IntLeaf i -> Format.sprintf "%d" i
   | CharLeaf i -> Format.sprintf "%c" i
   | NullLeaf -> "null"
+  | TypeLeaf t -> Format.sprintf "%s" (Prog.string_of_typ t)
