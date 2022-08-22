@@ -26,6 +26,7 @@ let rec cfg_expr_of_eexpr (e: Elang.expr) : expr res =
   | Elang.Evar v ->
     OK (Evar v)
   | Elang.Ecall (f, args_list) -> list_map_res (fun x -> cfg_expr_of_eexpr x) args_list >>= fun args_list -> OK(Ecall (f, args_list))
+  | Elang.Echar c -> Error "Cfg not yet implemented for other types"
 
 (* [cfg_node_of_einstr next cfg succ i] builds the CFG node(s) that correspond
    to the E instruction [i].
