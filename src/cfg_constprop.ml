@@ -10,13 +10,23 @@ open Options
 (* [simple_eval_eexpr e] evaluates an expression [e] with no variables. Raises
    an exception if the expression contains variables. *)
 let rec simple_eval_eexpr (e: expr) : int =
-   0
+  match e with
+  |Eint i -> i
+  |Eunop(u, e) ->
+    let i = simple_eval_eexpr e in eval_unop u i
+  |Ebinop(b, e1, e2) ->
+    let i1 = simple_eval_eexpr e1 in
+    let i2 = simple_eval_eexpr e2 in
+    eval_binop b i1 i2
+  |_ -> raise (Failure "simple_eval_eexpr: variable in expression")
 
 (* If an expression contains variables, we cannot simply evaluate it. *)
 
 (* [has_vars e] indicates whether [e] contains variables. *)
 let rec has_vars (e: expr) =
-   true
+  try let _ = simple_eval_eexpr e in false
+  with Failure _ -> true
+  
 
 let const_prop_binop b e1 e2 =
   let e = Ebinop (b, e1, e2) in
