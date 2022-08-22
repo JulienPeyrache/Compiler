@@ -27,6 +27,7 @@ let rec dump_eexpr = function
   | Eint i -> Printf.sprintf "%d" i
   | Evar s -> Printf.sprintf "%s" s
   | Ecall(s, el) -> Printf.sprintf "%s(%s)" s (String.concat ", " (List.map dump_eexpr el))
+  | Echar c -> Printf.sprintf "%c" c
 
 let indent_size = 2
 let spaces n =
