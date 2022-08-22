@@ -42,10 +42,21 @@ let const_prop_unop u e =
 
 
 let rec const_prop_expr (e: expr) =
-   e
+  match e with 
+  |Eint _ -> Eint (simple_eval_eexpr e)
+  |Ebinop (b, e1, e2) -> const_prop_binop b (const_prop_expr e1) (const_prop_expr e2)
+  |Eunop (u, e) -> const_prop_unop u (const_prop_expr e)
+  |Ecall(fname, fargs) -> Ecall(fname, List.map const_prop_expr fargs)
+  | _ -> e
 
 let constant_propagation_instr (i: cfg_node) : cfg_node =
-    i
+  match i with
+  |Cassign (v, e,s) -> Cassign (v, const_prop_expr e,s)
+  |Ccmp (e, s1, s2) -> Ccmp (const_prop_expr e, s1, s2)
+  |Ccall (fname, fargs, s) -> Ccall (fname, List.map const_prop_expr fargs, s)
+  |Creturn e -> Creturn (const_prop_expr e)
+  | _ -> i
+
 
 let constant_propagation_fun ({ cfgfunargs; cfgfunbody; cfgentry } as f: cfg_fun) =
   let ht = Hashtbl.map (fun n m ->
