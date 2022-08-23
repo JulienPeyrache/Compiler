@@ -50,6 +50,7 @@ match e with
   |OK x -> OK (eval_unop u x)
   |Error s -> Error s)
 |Eint n -> OK n
+|Echar c -> OK (int_of_char c)
 |Evar(s) -> (match Batteries.Hashtbl.find_option st.env s with
   |Some x -> OK x
   |None -> Error ("Variable non définie : "^s))
@@ -119,7 +120,7 @@ and eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr) (ep
 
    Cette fonction renvoie un couple (ret, st') avec la même signification que
    pour [eval_einstr]. *)
-and eval_efun (oc : Format.formatter) (st: int state) ({ funargs; funbody}: efun)
+and eval_efun (oc : Format.formatter) (st: int state) ({ funargs; funbody; funrettype; funvartyp}: efun)
     (fname: string) (vargs: expr list) (ep : eprog)
   : (int option * int state) res =
   (* L'environnement d'une fonction (mapping des variables locales vers leurs
