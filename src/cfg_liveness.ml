@@ -24,7 +24,6 @@ let live_cfg_node (node: cfg_node) (live_after: string Set.t) =
    match node with
    | Cassign(v,e,s) -> (Set.union (vars_in_expr e) (Set.remove v live_after))
    | Creturn(e) -> Set.union (vars_in_expr e) live_after
-   | Cprint(e,i) -> Set.union (vars_in_expr e) live_after
    | Ccmp(e, i1, i2) -> Set.union (vars_in_expr e) live_after
    | Cnop(i) -> live_after
    | Ccall(funname, args, i) -> Set.union (List.fold (fun acc e -> Set.union (vars_in_expr e) acc) Set.empty args) live_after

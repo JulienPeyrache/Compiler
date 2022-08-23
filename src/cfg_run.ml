@@ -48,16 +48,15 @@ and eval_cfginstr (oc : Format.formatter) (st : int state) ht (n: int) (cp : cpr
     | Creturn(e) ->
       eval_cfgexpr oc st e cp>>= fun e ->
       OK (e, st)
-    | Cprint(e, succ) ->
-      eval_cfgexpr oc st e cp >>= fun e ->
-      Format.fprintf oc "%d\n" e;
-      eval_cfginstr oc st ht succ cp
-    | Ccall(s, args, succ) -> find_function cp s >>= fun f ->
-      let n = List.length f.cfgfunargs in
-      let params = take n args in
-    list_map_res (fun expr -> eval_cfgexpr oc st expr cp) params >>= 
-    fun params -> eval_cfgfun oc st s f params cp >>= fun (v, st) ->
-      eval_cfginstr oc st ht succ cp
+    | Ccall(s, args, succ) -> (match find_function cp s with 
+        | OK f -> let n = List.length f.cfgfunargs in
+        let params = take n args in
+        list_map_res (fun expr -> eval_cfgexpr oc st expr cp) params >>= 
+        fun params -> eval_cfgfun oc st s f params cp >>= fun (v, st) ->
+        eval_cfginstr oc st ht succ cp
+        | Error msg-> if String.starts_with "Unknown function" msg then 
+                      list_map_res (fun expr -> eval_cfgexpr oc st expr cp) args >>= fun params -> do_builtin oc st.mem s params >>= fun v-> eval_cfginstr oc st ht succ cp
+                     else Error msg )
 and eval_cfgfun oc st cfgfunname { cfgfunargs;
                                       cfgfunbody;
                                       cfgentry} (vargs : int list) (cp : cprog) =

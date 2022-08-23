@@ -67,10 +67,6 @@ let rec cfg_node_of_einstr (next: int) (cfg : (int, cfg_node) Hashtbl.t)
   | Elang.Ireturn e ->
     cfg_expr_of_eexpr e >>= fun e ->
     Hashtbl.replace cfg next (Creturn e); OK (next, next + 1)
-  | Elang.Iprint e ->
-    cfg_expr_of_eexpr e >>= fun e ->
-    Hashtbl.replace cfg next (Cprint (e,succ));
-    OK (next, next + 1)
   |Elang.Icall (f, args_list) ->
     list_map_res cfg_expr_of_eexpr args_list >>= fun args ->
     Hashtbl.replace cfg next (Ccall (f, args, succ));
@@ -86,7 +82,6 @@ let rec reachable_nodes n (cfg: (int,cfg_node) Hashtbl.t) =
       match Hashtbl.find_option cfg n with
       | None -> reach
       | Some (Cnop succ)
-      | Some (Cprint (_, succ))
       | Some (Cassign (_, _, succ)) -> reachable_aux succ reach
       | Some (Creturn _) -> reach
       | Some (Ccmp (_, s1, s2)) ->

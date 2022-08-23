@@ -328,7 +328,51 @@ let ltl_instrs_of_linear_instr fname live_out allocation
     load_loc reg_tmp1 allocation r >>= fun (l,r) ->
     OK (l @ [LMov (reg_ret, r) ; LJmp epilogue_label])
   | Rlabel l -> OK [LLabel (Format.sprintf "%s_%d" fname l)]
-  |_ -> failwith "Not implemented : ltl_gen read_trl_regs"
+  | Rcall(ord, callee_fname, rargs) ->
+    (* calcul des registres à sauver*)
+    caller_save live_out allocation rargs >>= fun regs_save_set -> 
+      (* Instructions pour sauver ces regs sur la pile*)
+      let (save_regs_instructions, arg_saved, ofs) = save_caller_save (Set.elements regs_save_set) (-(numspilled +1)) in
+      (*Positionnement de sp en fonction de l'offset*)
+      let positionnement_sp = if (ofs = 0) then [] else make_sp_sub (-ofs * (Archi.wordsize ())) in 
+
+      (* Passage des paramètres*)
+      pass_parameters rargs allocation arg_saved >>= fun (parameter_passing_instructions, npush) -> 
+      
+      (* Appel de la fonction*)
+
+
+      (*Dépilement des arguments*)
+      let depilement_sp = if npush = 0 then [] else make_sp_add (npush*(Archi.wordsize())) in
+
+      (* Valeur de retour*)
+      match ord with 
+      |None -> OK []
+        
+      |Some(rd) -> (*fonction auxiliaire : store_loc qui permet de d'écrire dans le register rd en effectuant les instructions linstr*)
+                    store_loc reg_tmp1 allocation rd >>= fun (linstr, r') -> OK([LMov(r', reg_a0)]@linstr)
+      >>= fun sauver_retour_dans_rd -> 
+
+      (* Restauration des registres callee-save*)
+      let retirer_rd_de_argsaved ord (arg_saved : (int * int) list) = 
+        match ord with
+        |None -> arg_saved
+        |Some(rd)-> match Hashtbl.find_option allocation rd with
+            |Some(Reg reg) -> let rec parcours liste = 
+                                  match liste with
+                                  |(r, _) :: q when (r = reg)-> parcours q
+                                  |t::q -> [t] @ (parcours q)
+                                  |[] -> []
+                              in parcours arg_saved
+            |_  -> arg_saved
+          in 
+      let restore = restore_caller_save (retirer_rd_de_argsaved ord arg_saved) in
+
+      (*Repositionnement de sp suite à l'offset*)
+
+    let repositionnement_sp = if (ofs = 0) then [] else make_sp_add (-ofs * (Archi.wordsize ())) in 
+
+  OK(positionnement_sp@save_regs_instructions@parameter_passing_instructions@[LCall(callee_fname)]@depilement_sp@sauver_retour_dans_rd@restore@repositionnement_sp)
   in
   res >>= fun l ->
   OK (LComment (Format.asprintf "#<span style=\"background: pink;\"><b>Linear instr</b>: %a #</span>" (Rtl_print.dump_rtl_instr fname (None, None)) ins)::l)

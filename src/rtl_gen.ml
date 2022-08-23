@@ -81,8 +81,6 @@ let rtl_instrs_of_cfg_node ((next_reg:int), (var2reg: (string*int) list)) (c: cf
      (l@[Rmov(rdest, rsource);Rjmp succ], next_reg2, var2reg2)
    |Creturn(expr) -> let (r,l,next_reg2,var2reg2) = rtl_instrs_of_cfg_expr (next_reg,var2reg) expr in
                       (l@[Rret r], next_reg2, var2reg2)
-   |Cprint(expr,succ) -> let (r,l,next_reg2,var2reg2) = rtl_instrs_of_cfg_expr (next_reg,var2reg) expr in
-                    (l@[Rprint r; Rjmp succ], next_reg2, var2reg2)
    |Ccmp(expr, n1, n2) -> let (rop, e1, e2) = rtl_cmp_of_cfg_expr expr in
    let (r1,l1,next_reg2,var2reg2) = rtl_instrs_of_cfg_expr (next_reg,var2reg) e1 in
    let (r2,l2,next_reg3,var2reg3) = rtl_instrs_of_cfg_expr (next_reg2,var2reg2) e2 in

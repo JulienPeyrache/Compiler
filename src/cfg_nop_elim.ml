@@ -59,10 +59,9 @@ let replace_succs nop_succs (n: cfg_node) =
    match n with 
    | Cassign(s,e,t) -> Cassign(s,e,replace_succ nop_succs t)
    | Creturn(e) -> n
-   | Cprint(e, s) -> Cprint(e, replace_succ nop_succs s)
    | Ccmp(e1, s1, s2) -> Ccmp(e1, replace_succ nop_succs s1, replace_succ nop_succs s2)
    | Cnop s -> Cnop (replace_succ nop_succs s)
-   |Ccall (funname, args, s) -> Ccall (funname, args, replace_succ nop_succs s)
+   | Ccall (funname, args, s) -> Ccall (funname, args, replace_succ nop_succs s)
 
 (* [nop_elim_fun f] applique la fonction [replace_succs] à chaque nœud du CFG. *)
 let nop_elim_fun ({ cfgfunargs; cfgfunbody; cfgentry } as f: cfg_fun) =

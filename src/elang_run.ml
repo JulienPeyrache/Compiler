@@ -72,11 +72,6 @@ match e with
    - [st'] est l'état mis à jour. *)
 and eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr) (ep : eprog): ((int option * int state) res) =
  match instruction with
- |Iprint e ->
-   let x = eval_eexpr oc st e ep in
-   (function
-   |OK x -> (Format.fprintf oc "%d\n" x; OK (None, st))
-   |Error msg -> Error msg) x 
 |Ireturn e ->
    let x = eval_eexpr oc st e ep in
    (function
@@ -111,7 +106,12 @@ and eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr) (ep
                (match ret with
                   |Some _ -> OK (ret, st')
                   |None -> eval_einstr oc st' instruction ep ))
-|Icall(fname,el) -> find_function ep fname >>= fun fonction -> eval_efun oc st fonction fname el ep
+|Icall(fname,el) -> match find_function ep fname with 
+                     |OK fonction -> eval_efun oc st fonction fname el ep
+                     |Error msg -> if String.starts_with "Unknown function" msg then 
+                        list_map_res (fun e -> eval_eexpr oc st e ep) el >>= fun params -> do_builtin oc st.mem fname params >>= fun intopt -> OK(intopt, st)
+                                  else Error msg
+
 
 
 (* [eval_efun oc st f fname vargs] évalue la fonction [f] (dont le nom est

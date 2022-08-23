@@ -70,7 +70,6 @@ let rec make_einstr_of_ast (a: tree) : instr res =
     | Node(Tif, [e1; e2]) -> make_eexpr_of_ast e1 >>= fun expr1 -> make_einstr_of_ast e2 >>= fun instr2 -> OK (Iif(expr1, instr2, Iblock([])))
     | Node(Twhile, [e1; e2]) -> make_eexpr_of_ast e1 >>= fun expr1 -> make_einstr_of_ast e2 >>= fun expr2 -> OK (Iwhile(expr1, expr2))
     | Node(Treturn, [e1]) -> make_eexpr_of_ast e1 >>= fun expression -> OK (Ireturn(expression))
-    | Node(Tprint, [e1]) -> make_eexpr_of_ast e1 >>= fun expression -> OK (Iprint(expression))
     | Node(Tblock, l) -> list_map_res make_einstr_of_ast l >>= fun liste -> OK (Iblock(liste))
     | Node(Telse, l) -> list_map_res make_einstr_of_ast l >>= fun liste -> OK (Iblock(liste))
     | Node(Tcall, [StringLeaf fun_name;Node(Targs, argslist)]) -> list_map_res make_eexpr_of_ast argslist >>= fun args -> OK(Icall(fun_name, args))

@@ -78,14 +78,26 @@ let rec exec_rtl_instr oc rp rtlfunname f st (i: rtl_instr) =
     end
   | Rlabel n -> OK (None, st)
   |Rcall(ord, str, reg_list) -> 
-    find_function rp str >>= fun f -> list_map_res 
+    match find_function rp str with
+    |OK  f -> list_map_res 
     (fun reg -> match Hashtbl.find_option st.regs reg with
-    |None -> Error (Printf.sprintf "Call on undefined register (%s)" (print_reg reg))
-    |Some(s) -> OK(s)) reg_list >>= fun args ->
-    exec_rtl_fun oc rp st str f args >>= fun (ret, st) -> 
-    match ord with 
-    |Some(rd) -> (match ret with None -> Error "No return value" | Some(s) -> Hashtbl.replace st.regs rd s; OK(None, st))
-    |None -> OK(None, st)
+      |None -> Error (Printf.sprintf "Call on undefined register (%s)" (print_reg reg))
+      |Some(s) -> OK(s)) reg_list >>= fun args ->
+        exec_rtl_fun oc rp st str f args >>= fun (ret, st) -> 
+        (match ord with 
+            |Some(rd) -> (match ret with None -> Error "No return value" | Some(s) -> Hashtbl.replace st.regs rd s; OK(None, st))
+            |None -> OK(None, st))
+    |Error msg -> if String.starts_with "Unknown function" msg then 
+                    list_map_res 
+                    (fun reg -> match Hashtbl.find_option st.regs reg with
+                      |None -> Error (Printf.sprintf "Call on undefined register (%s)" (print_reg reg))
+                      |Some(s) -> OK(s)) reg_list >>= fun args ->
+                        do_builtin oc st.mem str args >>= fun ret -> 
+                        (match ord with 
+                            |Some(rd) -> (match ret with None -> Error "No return value" | Some(s) -> Hashtbl.replace st.regs rd s; OK(None, st))
+                            |None -> OK(None, st))
+                  else Error msg
+
 
 and exec_rtl_instr_at oc rp rtlfunname ({ rtlfunbody;  } as f: rtl_fun) st i =
   match Hashtbl.find_option rtlfunbody i with
