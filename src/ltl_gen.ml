@@ -346,11 +346,11 @@ let ltl_instrs_of_linear_instr fname live_out allocation
       let depilement_sp = if npush = 0 then [] else make_sp_add (npush*(Archi.wordsize())) in
 
       (* Valeur de retour*)
-      match ord with 
+      (match ord with 
       |None -> OK []
         
       |Some(rd) -> (*fonction auxiliaire : store_loc qui permet de d'écrire dans le register rd en effectuant les instructions linstr*)
-                    store_loc reg_tmp1 allocation rd >>= fun (linstr, r') -> OK([LMov(r', reg_a0)]@linstr)
+                    store_loc reg_tmp1 allocation rd >>= fun (linstr, r') -> OK([LMov(r', reg_a0)]@linstr))
       >>= fun sauver_retour_dans_rd -> 
 
       (* Restauration des registres callee-save*)

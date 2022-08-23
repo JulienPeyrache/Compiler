@@ -77,7 +77,7 @@ let compatible t1 t2 = match t1, t2 with
     let verif_typ_var_fun (fname : string) (arg_list : expr list) (typ_var : (string,typ) Hashtbl.t) (typ_fun : (string, typ list * typ) Hashtbl.t): bool res =
       if Hashtbl.mem typ_fun fname then let (l1, t) = Hashtbl.find typ_fun fname in 
         if List.length l1 = List.length arg_list then list_map_res (type_expr typ_var typ_fun) arg_list >>= fun l2 -> 
-          if l1 = l2 then OK(true) 
+          if (List.fold_right2 (fun typ1 typ2 boo -> (boo)&&(compatible typ1 typ2)) l1 l2 true) then OK(true) 
           else Error "Type error : les expressions données en argument ne sont pas du bon type" 
         else Error ("Type error : pas le bon nombre d'arguments dans la fonction appelée :"^fname) 
       else Error ("Type error : fonction appelée non définie :"^fname)
@@ -106,9 +106,12 @@ let rec make_eexpr_of_ast (typ_var : (string,typ) Hashtbl.t) (typ_fun : (string,
     | Node(Tneg, [e1])  -> make_eexpr_of_ast typ_var typ_fun e1 >>= fun expression -> OK (Eunop(Eneg, expression))
     | IntLeaf i -> OK(Eint i)
     | Node(Tcall, [StringLeaf fun_name; NullLeaf]) -> OK(Ecall(fun_name, []))
-    | Node(Tcall, [StringLeaf fun_name;Node(Targs, argslist)]) -> list_map_res (make_eexpr_of_ast typ_var typ_fun) argslist >>= fun args -> verif_typ_var_fun fun_name args typ_var typ_fun >>= fun bool -> if bool then  OK(Ecall(fun_name, args)) else Error ("Les types des arguments ne correspondent pas à l'appel de la fonction :"^fun_name)
+    | Node(Tcall, [StringLeaf fun_name;Node(Targs, argslist)]) -> list_map_res (make_eexpr_of_ast typ_var typ_fun) argslist >>= 
+        fun args -> verif_typ_var_fun fun_name args typ_var typ_fun >>= 
+        fun bool -> if bool then  OK(Ecall(fun_name, args)) 
+                    else Error ("Les types des arguments ne correspondent pas à l'appel de la fonction :"^fun_name)
     | StringLeaf s -> OK (Evar s)
-    | CharLeaf c -> OK (Evar (String.of_list [c]))
+    | CharLeaf c -> OK (Echar c)
     | _ -> Error (Printf.sprintf "Unacceptable ast in make_eexpr_of_ast %s"
                     (string_of_ast a))
   in
@@ -136,7 +139,6 @@ let rec make_einstr_of_ast (typ_var : (string,typ) Hashtbl.t) (typ_fun : (string
     | Node(Tif, [e1; e2]) -> make_eexpr_of_ast typ_var typ_fun e1 >>= fun expr1 -> make_einstr_of_ast typ_var typ_fun e2 >>= fun instr2 -> OK (Iif(expr1, instr2, Iblock([])))
     | Node(Twhile, [e1; e2]) -> make_eexpr_of_ast typ_var typ_fun e1 >>= fun expr1 -> make_einstr_of_ast typ_var typ_fun e2 >>= fun expr2 -> OK (Iwhile(expr1, expr2))
     | Node(Treturn, [e1]) -> make_eexpr_of_ast typ_var typ_fun e1 >>= fun expression -> OK (Ireturn(expression))
-    | Node(Tprint, [e1]) -> make_eexpr_of_ast typ_var typ_fun e1 >>= fun expression -> OK (Iprint(expression))
     | Node(Tblock, l) -> list_map_res (make_einstr_of_ast typ_var typ_fun) l >>= fun liste -> OK (Iblock(liste))
     | Node(Telse, l) -> list_map_res (make_einstr_of_ast typ_var typ_fun) l >>= fun liste -> OK (Iblock(liste))
     | Node(Tcall, [StringLeaf fun_name;Node(Targs, argslist)]) -> 

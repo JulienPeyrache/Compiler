@@ -115,8 +115,7 @@ let list_regexp : (regexp * (string -> token option)) list =
     (keyword_regexp "extern",       fun s -> Some (SYM_EXTERN));
     (keyword_regexp "include ",       fun s -> Some (SYM_INCLUDE s));
     (keyword_regexp "alloc",       fun s -> Some (SYM_ALLOC));
-    (any_string_regexp,       fun s -> Some (SYM_STRING s));
-    (any_char_regexp,       fun s -> Some (SYM_CHARACTER s.[0])); *)
+    (any_string_regexp,       fun s -> Some (SYM_STRING s));*)
 
     (* end TODO *)
     (Cat(keyword_regexp "//",
