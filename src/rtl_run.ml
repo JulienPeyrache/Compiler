@@ -87,7 +87,7 @@ let rec exec_rtl_instr oc rp rtlfunname f st (i: rtl_instr) =
         (match ord with 
             |Some(rd) -> (match ret with None -> Error "No return value" | Some(s) -> Hashtbl.replace st.regs rd s; OK(None, st))
             |None -> OK(None, st))
-    |Error msg -> if String.starts_with "Unknown function" msg then 
+    |Error msg -> if String.starts_with msg "Unknown function" then 
                     list_map_res 
                     (fun reg -> match Hashtbl.find_option st.regs reg with
                       |None -> Error (Printf.sprintf "Call on undefined register (%s)" (print_reg reg))

@@ -54,7 +54,7 @@ and eval_cfginstr (oc : Format.formatter) (st : int state) ht (n: int) (cp : cpr
         list_map_res (fun expr -> eval_cfgexpr oc st expr cp) params >>= 
         fun params -> eval_cfgfun oc st s f params cp >>= fun (v, st) ->
         eval_cfginstr oc st ht succ cp
-        | Error msg-> if String.starts_with "Unknown function" msg then 
+        | Error msg-> if String.starts_with msg "Unknown function" then 
                       list_map_res (fun expr -> eval_cfgexpr oc st expr cp) args >>= fun params -> do_builtin oc st.mem s params >>= fun v-> eval_cfginstr oc st ht succ cp
                      else Error msg )
 and eval_cfgfun oc st cfgfunname { cfgfunargs;

@@ -69,7 +69,7 @@ let rec exec_linear_instr oc lp fname f st (i: rtl_instr) =
         (match ord with 
           | None -> OK(None, st) 
           | Some rd -> (match ret with |None -> Error"Fonction appelée mais pas de valeur retournée" |Some(i)->(Hashtbl.replace st.regs rd i; OK(None, st))))
-      |Error msg -> if String.starts_with "Unknown function" msg then do_builtin oc st.mem str args >>= fun (ret)-> 
+      |Error msg -> if String.starts_with msg "Unknown function" then do_builtin oc st.mem str args >>= fun (ret)-> 
         (match ord with 
           | None -> OK(None, st) 
           | Some rd -> (match ret with |None -> Error"Fonction appelée mais pas de valeur retournée" |Some(i)->(Hashtbl.replace st.regs rd i; OK(None, st))))

@@ -108,7 +108,7 @@ and eval_einstr (oc : Format.formatter) (st: int state) (instruction: instr) (ep
                   |None -> eval_einstr oc st' instruction ep ))
 |Icall(fname,el) -> match find_function ep fname with 
                      |OK fonction -> eval_efun oc st fonction fname el ep
-                     |Error msg -> if String.starts_with "Unknown function" msg then 
+                     |Error msg -> if String.starts_with msg "Unknown function" then 
                         list_map_res (fun e -> eval_eexpr oc st e ep) el >>= fun params -> do_builtin oc st.mem fname params >>= fun intopt -> OK(intopt, st)
                                   else Error msg
 
