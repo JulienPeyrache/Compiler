@@ -163,12 +163,12 @@ let make_fundef_of_ast (a: tree) (typ_fun : (string, typ list * typ) Hashtbl.t):
   match a with
   (* Tri entre les déclarations de fonctions et les définitions de fonctions*)
   (*déclarations*)
-  | Node (Tfundef, [Node(Tfuntype, [TypeLeaf typ]);Node(Tfunname,[fname]); Node (Tfunargs, fargs); NullLeaf]) ->
+  | Node (Tfundef, [Node(Tfuntype, [TypeLeaf typ]);Node(Tfunname,[fname]); Node (Tfunargs, fargs)]) ->
     remplir_type_var typ_var fargs >>= fun (arg_list, typ_list) -> 
       Hashtbl.replace typ_fun (string_of_stringleaf fname) (typ_list, typ);
       OK(None)
   
-  | Node (Tfundef, [Node(Tfuntype, [TypeLeaf typ]);Node(Tfunname,[fname]); NullLeaf; NullLeaf]) ->
+  | Node (Tfundef, [Node(Tfuntype, [TypeLeaf typ]);Node(Tfunname,[fname]); NullLeaf]) ->
     Hashtbl.replace typ_fun (string_of_stringleaf fname) ([], typ);
     OK(None)
 
