@@ -1,0 +1,512 @@
+
+<style type="text/css">
+
+table , table th, table td , table tr{
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+}
+.rowname, th {
+    background-color: #ccc;
+}
+td {
+    padding: 0.4em;
+}
+.bad{
+    background-color: #f9d7dc;
+}
+.good{
+    background-color: #c7f0d2;
+}
+.warn{
+    background-color: orange;
+}
+fieldset {
+    display: inline;
+    margin: 1em;
+    padding: 1em;
+}
+</style>
+<table>
+<tr>
+<th>File</th><th>Lexer</th><th>e-run</th>
+<th>cfg-run</th>
+<th>cfg-run-after-cp</th>
+<th>cfg-run-after-dae</th>
+<th>cfg-run-after-ne</th>
+<th>rtl-run</th>
+<th>linear-run</th>
+<th>linear-run-after-dse</th>
+<th>ltl-run</th>
+<th>riscv-run</th>
+
+</tr>
+<tr><td class="rowname"><a href="type_basic/lexerror.e.html">type_basic/lexerror.e</a></td>
+                    <td class="bad" style="text-align: left;" colspan="11">Lexing error:<br><pre>Lexer failed to recognize string starting with '&$
+'
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_basic/syntaxerror1.e.html">type_basic/syntaxerror1.e</a></td><td class="good">OK</td>
+                    <td class="bad" style="text-align: left;" colspan="11">Parsing error:<br><pre>Error while parsing MUL_EXPR
+Expected one of { SYM_EQUALITY, SYM_NOTEQ, SYM_LT, SYM_LEQ, SYM_GT, SYM_GEQ, SYM_SEMICOLON, SYM_COMMA, SYM_RPARENTHESIS, SYM_PLUS, SYM_MINUS, SYM_ASTERISK, SYM_DIV, SYM_MOD} but got 'SYM_IDENTIFIER(a)' instead.
+ 'SYM_IDENTIFIER(a),SYM_SEMICOLON,SYM_RETURN,SYM_IDENTIFIER(b),SYM_SEMICOLON,SYM_RBRACE,SYM_EOF' 
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_basic/syntaxerror2.e.html">type_basic/syntaxerror2.e</a></td><td class="good">OK</td>
+                    <td class="bad" style="text-align: left;" colspan="11">Parsing error:<br><pre>Error while parsing ASSIGN_OR_DECL
+Expected one of { SYM_ASSIGN, SYM_SEMICOLON} but got 'SYM_IDENTIFIER(b)' instead.
+ 'SYM_IDENTIFIER(b),SYM_ASSIGN,SYM_INTEGER(3),SYM_SEMICOLON,SYM_RETURN,SYM_IDENTIFIER(c),SYM_SEMICOLON,SYM_RBRACE,SYM_EOF' 
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_basic/type_error1.e.html">type_basic/type_error1.e</a></td><td class="warn" style="text-align: left;" >Lexing not-what-expected:<br><pre>--- type_basic/type_error1.e.expect_lexer
++++ type_basic/type_error1.lex
+@@ -5,7 +5,7 @@
+ SYM_IDENTIFIER(x)
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(x)
+ SYM_RPARENTHESIS
+{}</pre></td><td class="">Ret = None.<br>Output = <pre>''</pre>Error: <pre>Fonction f ne renvoie rien</pre><br>Time: 0.03 seconds.<br></td><td class="">Ret = 0.<br>Output = <pre>'3
+'</pre><br>Time: 0.04 seconds.<br></td><td class="">Ret = 0.<br>Output = <pre>'3
+'</pre><br>Time: 0.03 seconds.<br></td><td class="">Ret = 0.<br>Output = <pre>'3
+'</pre><br>Time: 0.04 seconds.<br></td><td class="">Ret = 0.<br>Output = <pre>'3
+'</pre><br>Time: 0.02 seconds.<br></td><td class="">Ret = 0.<br>Output = <pre>'3
+'</pre><br>Time: 0.03 seconds.<br></td><td class="">Ret = 0.<br>Output = <pre>'3
+'</pre><br>Time: 0.02 seconds.<br></td><td class="">Ret = 0.<br>Output = <pre>'3
+'</pre><br>Time: 0.02 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_basic/type_error2.e.html">type_basic/type_error2.e</a></td><td class="warn" style="text-align: left;" >Lexing not-what-expected:<br><pre>--- type_basic/type_error2.e.expect_lexer
++++ type_basic/type_error2.lex
+@@ -5,7 +5,7 @@
+ SYM_IDENTIFIER(x)
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(x)
+ SYM_RPARENTHESIS
+{}</pre></td>
+                    <td class="bad" style="text-align: left;" colspan="11">Elang error:<br><pre>In make_einstr_of_ast Node(Tblock,Node(Tassign,Node(Tassignvar,Node(Tvartype,int), "x", Node(Tcall,"f", Node(Targs,3)))), Node(Treturn,"x")):
+In make_einstr_of_ast Node(Tassign,Node(Tassignvar,Node(Tvartype,int), "x", Node(Tcall,"f", Node(Targs,3)))):
+Les types pour assigner la variable de sont pas cohérents</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_basic/type_error3.e.html">type_basic/type_error3.e</a></td><td class="warn" style="text-align: left;" >Lexing not-what-expected:<br><pre>--- type_basic/type_error3.e.expect_lexer
++++ type_basic/type_error3.lex
+@@ -5,7 +5,7 @@
+ SYM_IDENTIFIER(x)
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(x)
+ SYM_RPARENTHESIS
+{}</pre></td>
+                    <td class="bad" style="text-align: left;" colspan="11">Elang error:<br><pre>In make_einstr_of_ast Node(Tblock,Node(Tassign,Node(Tassignvar,Node(Tvartype,int), "x", Node(Tcall,"f", Node(Targs,3)))), Node(Treturn,"x")):
+In make_einstr_of_ast Node(Tassign,Node(Tassignvar,Node(Tvartype,int), "x", Node(Tcall,"f", Node(Targs,3)))):
+Les types pour assigner la variable de sont pas cohérents</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_basic/type_error4.e.html">type_basic/type_error4.e</a></td><td class="good">OK</td>
+                    <td class="bad" style="text-align: left;" colspan="11">Elang error:<br><pre>In make_einstr_of_ast Node(Treturn,Node(Tcall,"f", Node(Targs,3, 4, 5))):
+In make_eexpr_of_ast Node(Tcall,"f", Node(Targs,3, 4, 5)):
+Type error : pas le bon nombre d'arguments dans la fonction appelée :f</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_basic/void-var.e.html">type_basic/void-var.e</a></td><td class="good">OK</td>
+                    <td class="bad" style="text-align: left;" colspan="11">Elang error:<br><pre>In make_einstr_of_ast Node(Tblock,Node(Tdecl,Node(Tvartype,void), "x"), Node(Treturn,0)):
+In make_einstr_of_ast Node(Tdecl,Node(Tvartype,void), "x"):
+Variable déclarée void</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/mutrec-hofstadter.e.html">type_funcall/mutrec-hofstadter.e</a></td><td class="warn" style="text-align: left;" >Lexing not-what-expected:<br><pre>--- type_funcall/mutrec-hofstadter.e.expect_lexer
++++ type_funcall/mutrec-hofstadter.lex
+@@ -116,7 +116,7 @@
+ SYM_IDENTIFIER(n)
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(f)
+ SYM_LPARENTHESIS
+{}</pre></td>
+                    <td class="bad" style="text-align: left;" colspan="11">Elang error:<br><pre>make_fundef_of_ast: Expected a Tfundef, got Node(Tfundef,Node(Tfuntype,int), Node(Tfunname,"m"), Node(Tfunargs,Node(Targ,Node(Tvartype,int), "n"))).</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/mutrec.e.html">type_funcall/mutrec.e</a></td><td class="warn" style="text-align: left;" >Lexing not-what-expected:<br><pre>--- type_funcall/mutrec.e.expect_lexer
++++ type_funcall/mutrec.lex
+@@ -88,7 +88,7 @@
+ SYM_IDENTIFIER(n)
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(even)
+ SYM_LPARENTHESIS
+{}</pre></td>
+                    <td class="bad" style="text-align: left;" colspan="11">Elang error:<br><pre>make_fundef_of_ast: Expected a Tfundef, got Node(Tfundef,Node(Tfuntype,int), Node(Tfunname,"even"), Node(Tfunargs,Node(Targ,Node(Tvartype,int), "n"))).</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_basic/uninitialized.e.html">type_basic/uninitialized.e</a></td><td class="good">OK</td><td class="bad">Ret = None.<br>Output = <pre>''</pre>Error: <pre>Variable non définie : a</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = None.<br>Output = <pre>''</pre>Error: <pre>Unknown variable a
+</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = None.<br>Output = <pre>''</pre>Error: <pre>Unknown variable a
+</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = None.<br>Output = <pre>''</pre>Error: <pre>Unknown variable a
+</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = None.<br>Output = <pre>''</pre>Error: <pre>Unknown variable a
+</pre><br>Time: 0.01 seconds.<br></td><td class="bad">Ret = None.<br>Output = <pre>''</pre>Error: <pre>Binop applied on undefined registers (r0 and r1)</pre><br>Time: 0.03 seconds.<br></td><td class="bad">Ret = None.<br>Output = <pre>''</pre>Error: <pre>Binop applied on undefined registers (r0 and r1)</pre><br>Time: 0.03 seconds.<br></td><td class="bad">Ret = None.<br>Output = <pre>''</pre>Error: <pre>Binop applied on undefined registers (r0 and r1)</pre><br>Time: 0.02 seconds.<br></td><td class="bad">Ret = 3.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="bad">Ret = 9.<br>Output = <pre>''</pre><br>Time: 0.11 seconds.<br></td></tr><tr><td class="rowname"><a href="type_funcall/2apb.e.html">type_funcall/2apb.e</a></td><td class="good">OK</td><td class="good">Ret = 14.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 14.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 14.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 14.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 14.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 14.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 14.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 14.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/5args.e.html">type_funcall/5args.e</a></td><td class="good">OK</td><td class="good">Ret = 80.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 80.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 80.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 80.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 80.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 80.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 80.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 80.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/argswap-simple.e.html">type_funcall/argswap-simple.e</a></td><td class="good">OK</td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/argswap.e.html">type_funcall/argswap.e</a></td><td class="warn" style="text-align: left;" >Lexing not-what-expected:<br><pre>--- type_funcall/argswap.e.expect_lexer
++++ type_funcall/argswap.lex
+@@ -8,12 +8,12 @@
+ SYM_IDENTIFIER(b)
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(a)
+ SYM_RPARENTHESIS
+ SYM_SEMICOLON
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(b)
+ SYM_RPARENTHESIS
+@@ -36,12 +36,12 @@
+ SYM_IDENTIFIER(b)
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(a)
+ SYM_RPARENTHESIS
+ SYM_SEMICOLON
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(b)
+ SYM_RPARENTHESIS
+{}</pre></td><td class="good">Ret = 2.<br>Output = <pre>'14
+12
+12
+14
+'</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>'14
+12
+12
+14
+'</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>'14
+12
+12
+14
+'</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>'14
+12
+12
+14
+'</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>'14
+12
+12
+14
+'</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>'14
+12
+12
+14
+'</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>'14
+12
+12
+14
+'</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>'14
+12
+12
+14
+'</pre><br>Time: 0.02 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/even_more_args.e.html">type_funcall/even_more_args.e</a></td><td class="good">OK</td><td class="good">Ret = 23887562.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 23887562.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 23887562.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 23887562.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 23887562.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 23887562.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 23887562.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 23887562.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/f+g.e.html">type_funcall/f+g.e</a></td><td class="good">OK</td><td class="good">Ret = 25.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 25.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 25.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 25.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 25.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 25.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 25.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 25.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/f_3.e.html">type_funcall/f_3.e</a></td><td class="good">OK</td><td class="good">Ret = 3.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 3.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 3.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 3.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 3.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 3.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 3.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 3.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/fib.e.html">type_funcall/fib.e</a></td><td class="good">OK</td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.11 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.09 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.08 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/gcdrec.e.html">type_funcall/gcdrec.e</a></td><td class="good">OK</td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/hanoi.e.html">type_funcall/hanoi.e</a></td><td class="good">OK</td><td class="good">Ret = 16383.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 16383.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 16383.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 16383.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 16383.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 16383.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 16383.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 16383.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/lots_of_args.e.html">type_funcall/lots_of_args.e</a></td><td class="good">OK</td><td class="good">Ret = 5167.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 5167.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 5167.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 5167.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 5167.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 5167.<br>Output = <pre>''</pre><br>Time: 0.00 seconds.<br></td><td class="good">Ret = 5167.<br>Output = <pre>''</pre><br>Time: 0.00 seconds.<br></td><td class="good">Ret = 5167.<br>Output = <pre>''</pre><br>Time: 0.00 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_funcall/print_and_fun.e.html">type_funcall/print_and_fun.e</a></td><td class="warn" style="text-align: left;" >Lexing not-what-expected:<br><pre>--- type_funcall/print_and_fun.e.expect_lexer
++++ type_funcall/print_and_fun.lex
+@@ -26,12 +26,12 @@
+ SYM_INTEGER(8)
+ SYM_RPARENTHESIS
+ SYM_SEMICOLON
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(a)
+ SYM_RPARENTHESIS
+ SYM_SEMICOLON
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(b)
+ SYM_RPARENTHESIS
+{}</pre></td><td class="good">Ret = 0.<br>Output = <pre>'3
+8
+'</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'3
+8
+'</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'3
+8
+'</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'3
+8
+'</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'3
+8
+'</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'3
+8
+'</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'3
+8
+'</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'3
+8
+'</pre><br>Time: 0.01 seconds.<br></td>
+                    <td class="bad" style="text-align: left;" colspan="3">global error:<br><pre>Failure("Not implemented : ltl_gen read_trl_regs")
+Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+Called from Ltl_gen.ltl_instrs_of_linear_instr in file "ltl_gen.ml", line 331, characters 8-58
+Called from Utils.list_map_resi.(fun) in file "utils.ml", line 252, characters 6-11
+Called from BatList.fold_lefti.loop in file "src/batList.mlv", line 1031, characters 30-41
+Called from Ltl_gen.ltl_fun_of_linear_fun in file "ltl_gen.ml", line 386, characters 2-168
+Called from Ltl_gen.ltl_prog_of_linear.(fun) in file "ltl_gen.ml", line 421, characters 8-56
+Called from Utils.list_map_res.(fun) in file "utils.ml", line 244, characters 6-9
+Called from Stdlib__list.fold_left in file "list.ml", line 121, characters 24-34
+Called from Ltl_gen.pass_ltl_gen in file "ltl_gen.ml", line 427, characters 8-33
+Called from Utils.(>>=) in file "utils.ml" (inlined), line 38, characters 16-30
+Called from Main in file "main.ml", line 188, characters 8-1012
+</pre></td>
+                    </tr><tr><td class="rowname"><a href="type_basic/1_or_3a.e.html">type_basic/1_or_3a.e</a></td><td class="good">OK</td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.06 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.33 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/1_or_4.e.html">type_basic/1_or_4.e</a></td><td class="good">OK</td><td class="good">Ret = 4.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 4.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 4.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 4.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 4.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 4.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 4.<br>Output = <pre>''</pre><br>Time: 0.06 seconds.<br></td><td class="good">Ret = 4.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 4.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 4.<br>Output = <pre>''</pre><br>Time: 0.44 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/2xpy.e.html">type_basic/2xpy.e</a></td><td class="good">OK</td><td class="good">Ret = 40.<br>Output = <pre>''</pre><br>Time: 0.08 seconds.<br></td><td class="good">Ret = 40.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 40.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 40.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 40.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 40.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 40.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 40.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 40.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 40.<br>Output = <pre>''</pre><br>Time: 0.41 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/35gt12.e.html">type_basic/35gt12.e</a></td><td class="good">OK</td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.36 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/a_19.e.html">type_basic/a_19.e</a></td><td class="good">OK</td><td class="good">Ret = 19.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 19.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 19.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 19.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 19.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 19.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 19.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 19.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 19.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 19.<br>Output = <pre>''</pre><br>Time: 0.33 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/a_simple_variable_23.e.html">type_basic/a_simple_variable_23.e</a></td><td class="good">OK</td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.40 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/arg-test.e.html">type_basic/arg-test.e</a></td><td class="good">OK</td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.27 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/comment++.e.html">type_basic/comment++.e</a></td><td class="good">OK</td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.09 seconds.<br></td><td class="good">Ret = 23.<br>Output = <pre>''</pre><br>Time: 0.37 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/comment.e.html">type_basic/comment.e</a></td><td class="good">OK</td><td class="good">Ret = 7.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 7.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 7.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 7.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 7.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 7.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 7.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 7.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 7.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 7.<br>Output = <pre>''</pre><br>Time: 0.32 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/dec_to_0.e.html">type_basic/dec_to_0.e</a></td><td class="good">OK</td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.41 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/double.e.html">type_basic/double.e</a></td><td class="good">OK</td><td class="good">Ret = 28.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 28.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 28.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 28.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 28.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 28.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 28.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 28.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 28.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 28.<br>Output = <pre>''</pre><br>Time: 0.41 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/fac.e.html">type_basic/fac.e</a></td><td class="good">OK</td><td class="good">Ret = 87178291200.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 87178291200.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 87178291200.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 87178291200.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 87178291200.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 87178291200.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 87178291200.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 87178291200.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 87178291200.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 87178291200.<br>Output = <pre>''</pre><br>Time: 0.31 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/fibbetter.e.html">type_basic/fibbetter.e</a></td><td class="good">OK</td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.06 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 377.<br>Output = <pre>''</pre><br>Time: 0.33 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/gcd.e.html">type_basic/gcd.e</a></td><td class="good">OK</td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 2.<br>Output = <pre>''</pre><br>Time: 0.29 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/just_a_variable_37.e.html">type_basic/just_a_variable_37.e</a></td><td class="good">OK</td><td class="good">Ret = 37.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 37.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 37.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 37.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37.<br>Output = <pre>''</pre><br>Time: 0.26 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/loop.e.html">type_basic/loop.e</a></td><td class="good">OK</td><td class="good">Ret = -40.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = -40.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = -40.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = -40.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = -40.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = -40.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = -40.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = -40.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = -40.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = -40.<br>Output = <pre>''</pre><br>Time: 0.28 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/loop2.e.html">type_basic/loop2.e</a></td><td class="good">OK</td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.29 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/loop3.e.html">type_basic/loop3.e</a></td><td class="good">OK</td><td class="good">Ret = 128.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 128.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 128.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 128.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 128.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 128.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 128.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 128.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 128.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 128.<br>Output = <pre>''</pre><br>Time: 0.28 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/loop4.e.html">type_basic/loop4.e</a></td><td class="good">OK</td><td class="good">Ret = 16.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 16.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 16.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 16.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 16.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 16.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 16.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 16.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 16.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 16.<br>Output = <pre>''</pre><br>Time: 0.23 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/lots-of-regs.e.html">type_basic/lots-of-regs.e</a></td><td class="good">OK</td><td class="good">Ret = 37761.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37761.<br>Output = <pre>''</pre><br>Time: 0.06 seconds.<br></td><td class="good">Ret = 37761.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37761.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37761.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37761.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 37761.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37761.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 37761.<br>Output = <pre>''</pre><br>Time: 0.00 seconds.<br></td><td class="good">Ret = 37761.<br>Output = <pre>''</pre><br>Time: 0.14 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/muldivmod.e.html">type_basic/muldivmod.e</a></td><td class="good">OK</td><td class="good">Ret = 8.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 8.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 8.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 8.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 8.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 8.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 8.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 8.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 8.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 8.<br>Output = <pre>''</pre><br>Time: 0.25 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/mulmulmul.e.html">type_basic/mulmulmul.e</a></td><td class="good">OK</td><td class="good">Ret = 5040.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 5040.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 5040.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 5040.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 5040.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 5040.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 5040.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 5040.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 5040.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 5040.<br>Output = <pre>''</pre><br>Time: 0.32 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/prime.e.html">type_basic/prime.e</a></td><td class="warn" style="text-align: left;" >Lexing not-what-expected:<br><pre>--- type_basic/prime.e.expect_lexer
++++ type_basic/prime.lex
+@@ -5,7 +5,7 @@
+ SYM_IDENTIFIER(n)
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(n)
+ SYM_RPARENTHESIS
+@@ -19,7 +19,7 @@
+ SYM_INTEGER(0)
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_INTEGER(2)
+ SYM_RPARENTHESIS
+@@ -54,7 +54,7 @@
+ SYM_INTEGER(0)
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(f)
+ SYM_RPARENTHESIS
+@@ -83,7 +83,7 @@
+ SYM_INTEGER(1)
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_IDENTIFIER(n)
+ SYM_RPARENTHESIS
+{}</pre></td><td class="good">Ret = 0.<br>Output = <pre>'14
+2
+7
+'</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'14
+2
+7
+'</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'14
+2
+7
+'</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'14
+2
+7
+'</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'14
+2
+7
+'</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'14
+2
+7
+'</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'14
+2
+7
+'</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'14
+2
+7
+'</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'14
+2
+7
+'</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'14
+2
+7
+'</pre><br>Time: 0.24 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/print_int.e.html">type_basic/print_int.e</a></td><td class="warn" style="text-align: left;" >Lexing not-what-expected:<br><pre>--- type_basic/print_int.e.expect_lexer
++++ type_basic/print_int.lex
+@@ -3,7 +3,7 @@
+ SYM_LPARENTHESIS
+ SYM_RPARENTHESIS
+ SYM_LBRACE
+-SYM_IDENTIFIER(print)
++SYM_PRINT
+ SYM_LPARENTHESIS
+ SYM_INTEGER(300)
+ SYM_RPARENTHESIS
+{}</pre></td><td class="good">Ret = 0.<br>Output = <pre>'300
+'</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'300
+'</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'300
+'</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'300
+'</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'300
+'</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'300
+'</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'300
+'</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'300
+'</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'300
+'</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>'300
+'</pre><br>Time: 0.28 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/range_0_10.e.html">type_basic/range_0_10.e</a></td><td class="good">OK</td><td class="good">Ret = 10.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 10.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 10.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 10.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 10.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 10.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 10.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 10.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 10.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 10.<br>Output = <pre>''</pre><br>Time: 0.22 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/range_10_0_then_dec0.e.html">type_basic/range_10_0_then_dec0.e</a></td><td class="good">OK</td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.24 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/ret0.e.html">type_basic/ret0.e</a></td><td class="good">OK</td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 0.<br>Output = <pre>''</pre><br>Time: 0.31 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/ret20.e.html">type_basic/ret20.e</a></td><td class="good">OK</td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 20.<br>Output = <pre>''</pre><br>Time: 0.17 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/ret21.e.html">type_basic/ret21.e</a></td><td class="good">OK</td><td class="good">Ret = 21.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 21.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 21.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 21.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 21.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 21.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 21.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 21.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 21.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 21.<br>Output = <pre>''</pre><br>Time: 0.21 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/ret60.e.html">type_basic/ret60.e</a></td><td class="good">OK</td><td class="good">Ret = 60.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 60.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 60.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 60.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 60.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 60.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 60.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 60.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 60.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 60.<br>Output = <pre>''</pre><br>Time: 0.28 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/sum_ints_upto_10.e.html">type_basic/sum_ints_upto_10.e</a></td><td class="good">OK</td><td class="good">Ret = 46.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 46.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 46.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 46.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 46.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 46.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 46.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 46.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 46.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 46.<br>Output = <pre>''</pre><br>Time: 0.25 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/sum_ints_upto_n.e.html">type_basic/sum_ints_upto_n.e</a></td><td class="good">OK</td><td class="good">Ret = 105.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 105.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 105.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 105.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 105.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 105.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 105.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 105.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 105.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 105.<br>Output = <pre>''</pre><br>Time: 0.15 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/useless-assigns.e.html">type_basic/useless-assigns.e</a></td><td class="good">OK</td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.06 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.04 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.02 seconds.<br></td><td class="good">Ret = 1.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td></tr><tr><td class="rowname"><a href="type_basic/x-is-what.e.html">type_basic/x-is-what.e</a></td><td class="good">OK</td><td class="good">Ret = 6.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 6.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 6.<br>Output = <pre>''</pre><br>Time: 0.05 seconds.<br></td><td class="good">Ret = 6.<br>Output = <pre>''</pre><br>Time: 0.11 seconds.<br></td><td class="good">Ret = 6.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 6.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 6.<br>Output = <pre>''</pre><br>Time: 0.03 seconds.<br></td><td class="good">Ret = 6.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 6.<br>Output = <pre>''</pre><br>Time: 0.01 seconds.<br></td><td class="good">Ret = 6.<br>Output = <pre>''</pre><br>Time: 0.14 seconds.<br></td></tr>

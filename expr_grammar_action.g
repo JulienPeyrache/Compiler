@@ -50,7 +50,7 @@ TYPE -> SYM_VOID {TypeLeaf(Tvoid)}
 FUNDEFS -> FUNDEF FUNDEFS { $1::$2}
 FUNDEFS -> { [] }
 
-FUNDEF -> TYPE IDENTIFIER SYM_LPARENTHESIS LPARAMS SYM_RPARENTHESIS DEF_OR_NOTDEF {Node (Tfundef, [Node(Tfuntype, [$1]);Node(Tfunname,[$2]);Node(Tfunargs,[$4])]@($6))}
+FUNDEF -> TYPE IDENTIFIER SYM_LPARENTHESIS LPARAMS SYM_RPARENTHESIS DEF_OR_NOTDEF {Node (Tfundef, [Node(Tfuntype, [$1]);Node(Tfunname,[$2]);$4]@($6))}
 
 DEF_OR_NOTDEF -> SYM_LBRACE LINSTRS SYM_RBRACE {[Node(Tfunbody, [$2])]}
 DEF_OR_NOTDEF -> SYM_SEMICOLON {[]}

@@ -104,7 +104,8 @@ let rec make_eexpr_of_ast (typ_var : (string,typ) Hashtbl.t) (typ_fun : (string,
                                                 | _, Error msg -> Error msg
                                                 )
     | Node(Tneg, [e1])  -> make_eexpr_of_ast typ_var typ_fun e1 >>= fun expression -> OK (Eunop(Eneg, expression))
-    | Node(Tint, [IntLeaf i]) -> OK(Eint i)
+    | IntLeaf i -> OK(Eint i)
+    | Node(Tcall, [StringLeaf fun_name; NullLeaf]) -> OK(Ecall(fun_name, []))
     | Node(Tcall, [StringLeaf fun_name;Node(Targs, argslist)]) -> list_map_res (make_eexpr_of_ast typ_var typ_fun) argslist >>= fun args -> verif_typ_var_fun fun_name args typ_var typ_fun >>= fun bool -> if bool then  OK(Ecall(fun_name, args)) else Error ("Les types des arguments ne correspondent pas à l'appel de la fonction :"^fun_name)
     | StringLeaf s -> OK (Evar s)
     | CharLeaf c -> OK (Evar (String.of_list [c]))
@@ -124,6 +125,12 @@ let rec make_einstr_of_ast (typ_var : (string,typ) Hashtbl.t) (typ_fun : (string
       type_expr typ_var typ_fun expression >>= fun typ_expr -> if (typ_expr = Tvoid)||(typ = Tvoid)||not(compatible typ typ_expr) then Error "Les types pour assigner la variable de sont pas cohérents" else
       (Hashtbl.replace typ_var s typ; 
       OK (Iassign(s,expression)))
+    | Node(Tassign,[Node(Tassignvar, [StringLeaf s; e1])]) -> (match Hashtbl.find_option typ_var s with
+        |Some(typ) -> make_eexpr_of_ast typ_var typ_fun e1 >>= fun expression ->
+                      type_expr typ_var typ_fun expression >>= fun typ_expr -> if (typ_expr = Tvoid)||(typ = Tvoid)||not(compatible typ typ_expr) then Error "Les types pour assigner la variable de sont pas cohérents" else
+                      (Hashtbl.replace typ_var s typ; 
+                      OK (Iassign(s,expression)))
+        |None -> Error ("Variable non définie précedemment assignée :"^s))
     | Node(Tdecl, [Node(Tvartype, [TypeLeaf typ]); StringLeaf s]) -> if typ = Tvoid then Error "Variable déclarée void" else (Hashtbl.replace typ_var s typ; OK(Iblock([])))
     | Node(Tif, [e1; e2; e3]) -> make_eexpr_of_ast typ_var typ_fun e1 >>= fun expr1 -> make_einstr_of_ast typ_var typ_fun e2 >>= fun instr2 -> make_einstr_of_ast typ_var typ_fun e3 >>= fun instr3 ->OK (Iif(expr1, instr2, instr3))
     | Node(Tif, [e1; e2]) -> make_eexpr_of_ast typ_var typ_fun e1 >>= fun expr1 -> make_einstr_of_ast typ_var typ_fun e2 >>= fun instr2 -> OK (Iif(expr1, instr2, Iblock([])))
@@ -164,13 +171,13 @@ let make_fundef_of_ast (a: tree) (typ_fun : (string, typ list * typ) Hashtbl.t):
     OK(None)
 
   (*définition*)
-  | Node (Tfundef, [Node(Tfuntype, [TypeLeaf typ]);Node(Tfunname,[fname]); Node (Tfunargs, fargs); fbody]) ->
+  | Node (Tfundef, [Node(Tfuntype, [TypeLeaf typ]);Node(Tfunname,[fname]); Node (Tfunargs, fargs); Node(Tfunbody, [fbody])]) ->
     remplir_type_var typ_var fargs >>= fun (arg_list, typ_list) -> 
       Hashtbl.replace typ_fun (string_of_stringleaf fname) (typ_list, typ);
       make_einstr_of_ast typ_var typ_fun fbody >>= fun fbody ->
     OK(Some(string_of_stringleaf fname, {funargs = arg_list; funbody = fbody ; funrettype = typ ; funvartyp = typ_var}))
 
-  | Node (Tfundef, [Node(Tfuntype, [TypeLeaf typ]);Node(Tfunname,[fname]); NullLeaf; fbody]) ->
+  | Node (Tfundef, [Node(Tfuntype, [TypeLeaf typ]);Node(Tfunname,[fname]); NullLeaf; Node(Tfunbody, [fbody])]) ->
     Hashtbl.replace typ_fun (string_of_stringleaf fname) ([], typ);   
     make_einstr_of_ast typ_var typ_fun fbody >>= fun fbody -> 
     OK(Some(string_of_stringleaf fname, {funargs = []; funbody = fbody ; funrettype = typ ; funvartyp = typ_var}))
